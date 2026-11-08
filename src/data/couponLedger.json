@@ -1,0 +1,394 @@
+[
+  {
+    "id": "flycat",
+    "name": "飞猫云",
+    "url": "https://flycat1.flycatvipaff.cc/#/?code=bof9qAqT",
+    "offers": [],
+    "note": "资料未提供公开优惠码；请查看结算页活动"
+  },
+  {
+    "id": "v2yun",
+    "name": "唯兔云",
+    "url": "https://fast.v2yunvipaff.com/#/?code=o7dedbPF",
+    "offers": [
+      {
+        "code": "rabbit",
+        "rate": null,
+        "condition": "79年付包不支持；折扣以结算为准"
+      }
+    ],
+    "note": "rabbit：79年付包不支持；折扣以结算为准"
+  },
+  {
+    "id": "u1s1",
+    "name": "U1S1",
+    "url": "https://pkdj7.vipaff.cc/#/?code=f80mNPst",
+    "offers": [
+      {
+        "code": "U1S1",
+        "rate": 0.85,
+        "condition": "新人特惠；96年包不适用"
+      }
+    ],
+    "note": "U1S1：8.5折；新人特惠；96年包不适用"
+  },
+  {
+    "id": "dalaoyun",
+    "name": "大佬云",
+    "url": "https://a01vipaff.dalaoyunaff.com/#/?code=L8S7nnBc",
+    "offers": [
+      {
+        "code": "dly88",
+        "rate": 0.7,
+        "condition": "仅限月付；活动有效期以结算为准"
+      }
+    ],
+    "note": "dly88：7折；仅限月付；活动有效期以结算为准"
+  },
+  {
+    "id": "breezenet",
+    "name": "微风网络",
+    "url": "https://edp01.breezenetaff.com/#/?code=vwKlDHMB",
+    "offers": [
+      {
+        "code": "weifeng90",
+        "rate": null,
+        "condition": "原资料未注明折扣；不能依据码名推断"
+      }
+    ],
+    "note": "weifeng90：原资料未注明折扣；不能依据码名推断"
+  },
+  {
+    "id": "shandianshu",
+    "name": "闪电鼠",
+    "url": "https://a01vipaff.shandianshuaff.com/#/?code=s0XoFrCL",
+    "offers": [
+      {
+        "code": "sd88",
+        "rate": 0.7,
+        "condition": "仅限月付；活动有效期以结算为准"
+      }
+    ],
+    "note": "sd88：7折；仅限月付；活动有效期以结算为准"
+  },
+  {
+    "id": "xingdaomeng",
+    "name": "星岛梦",
+    "url": "https://kfccbb.xingdaomeng.com/#/?code=qLWqdVHu",
+    "offers": [
+      {
+        "code": "2happy80",
+        "rate": 0.8,
+        "condition": "年付及以上"
+      },
+      {
+        "code": "2happy85",
+        "rate": 0.85,
+        "condition": "年付以下"
+      }
+    ],
+    "note": "2happy80：8折；年付及以上；2happy85：8.5折；年付以下"
+  },
+  {
+    "id": "yunjiexian",
+    "name": "云界线",
+    "url": "https://a01vipaff.yunjiexianaff.com/#/?code=jtDT795M",
+    "offers": [
+      {
+        "code": "yjx888",
+        "rate": 0.7,
+        "condition": "首单"
+      }
+    ],
+    "note": "yjx888：7折；首单"
+  },
+  {
+    "id": "shenxing",
+    "name": "神行加速",
+    "url": "https://a01vipaff.shenxingaff.com/#/?code=bQAUdzVA",
+    "offers": [
+      {
+        "code": "sx0077",
+        "rate": 0.7,
+        "condition": "新客单全套餐；资料注明可折上折，具体叠加以订单为准"
+      }
+    ],
+    "note": "sx0077：7折；新客单全套餐；资料注明可折上折，具体叠加以订单为准"
+  },
+  {
+    "id": "huanqiuti",
+    "name": "环球梯",
+    "url": "https://a01vipaff.huanqiutiaff.com/#/?code=atiVRbf8",
+    "offers": [
+      {
+        "code": "HQ66",
+        "rate": 0.7,
+        "condition": "全场套餐"
+      }
+    ],
+    "note": "HQ66：7折；全场套餐"
+  },
+  {
+    "id": "guangsuyun",
+    "name": "光速云",
+    "url": "https://mdlky.gsyaff.com/#/?code=q8L2S6qH",
+    "offers": [],
+    "note": "资料未提供公开优惠码；请查看结算页活动"
+  },
+  {
+    "id": "jilianyun",
+    "name": "极连云",
+    "url": "https://kdjhao.jlyvipaff.com/#/?code=1tO0vnfN",
+    "offers": [
+      {
+        "code": "JLY888",
+        "rate": 0.8,
+        "condition": "适用套餐以结算为准"
+      }
+    ],
+    "note": "JLY888：8折；适用套餐以结算为准"
+  },
+  {
+    "id": "quanqiuyun",
+    "name": "全球云",
+    "url": "https://sswdh.gcvipaff.com/#/?code=yNAGSMuF",
+    "offers": [
+      {
+        "code": "qq88",
+        "rate": 0.8,
+        "condition": "适用套餐以结算为准"
+      }
+    ],
+    "note": "qq88：8折；适用套餐以结算为准"
+  },
+  {
+    "id": "2maoyun",
+    "name": "二猫云",
+    "url": "https://waaa.2maoyunaff.cc/#/?code=kwAHp3OD",
+    "offers": [],
+    "note": "资料未提供公开优惠码；请查看结算页活动"
+  },
+  {
+    "id": "1fly",
+    "name": "一翻云",
+    "url": "https://wzjc.1flyunaff.cc/#/?code=rXQYEiN5",
+    "offers": [
+      {
+        "code": "1FLYYUN",
+        "rate": 0.9,
+        "condition": "适用套餐以结算为准"
+      }
+    ],
+    "note": "1FLYYUN：9折；适用套餐以结算为准"
+  },
+  {
+    "id": "worryfree",
+    "name": "无忧链接",
+    "url": "https://wep01.worryfreeaff.com/#/?code=KJVyWpcg",
+    "offers": [],
+    "note": "资料未提供公开优惠码；请查看结算页活动"
+  },
+  {
+    "id": "kuajie",
+    "name": "跨界云",
+    "url": "https://vip02.kuajieaff.com/#/?code=njJJQ9YK",
+    "offers": [
+      {
+        "code": "kuajie",
+        "rate": null,
+        "condition": "原资料未注明折扣或叠加条件"
+      }
+    ],
+    "note": "kuajie：原资料未注明折扣或叠加条件"
+  },
+  {
+    "id": "shanyue",
+    "name": "闪跃",
+    "url": "https://vip02.flashleapaff.com/#/?code=vmxwXKqh",
+    "offers": [
+      {
+        "code": "shanyue",
+        "rate": 0.8,
+        "condition": "原资料标注优惠20%；有效期以结算为准"
+      }
+    ],
+    "note": "shanyue：8折；原资料标注优惠20%；有效期以结算为准"
+  },
+  {
+    "id": "lingmao",
+    "name": "灵猫",
+    "url": "https://vip02.civetaff.com/#/?code=K61otOwg",
+    "offers": [
+      {
+        "code": "lingmao",
+        "rate": null,
+        "condition": "原资料未注明折扣"
+      }
+    ],
+    "note": "lingmao：原资料未注明折扣"
+  },
+  {
+    "id": "firefly",
+    "name": "萤火虫 Firefly",
+    "url": "https://vip02.fireflyaff.com/#/?code=hVj4Osf9",
+    "offers": [],
+    "note": "资料未提供公开优惠码；请查看结算页活动"
+  },
+  {
+    "id": "twilight",
+    "name": "暮光网络",
+    "url": "https://varnexa.twilightaff.com/#/?code=A56DH1Af",
+    "offers": [],
+    "note": "资料未提供公开优惠码；请查看结算页活动"
+  },
+  {
+    "id": "guangnianti",
+    "name": "光年梯",
+    "url": "https://ggmq.gntaff.com/#/?code=Oukij2FS",
+    "offers": [],
+    "note": "资料未提供公开优惠码；请查看结算页活动"
+  },
+  {
+    "id": "yuzhou",
+    "name": "宇宙云",
+    "url": "https://wzjc.yuzoucloud.cc/#/?code=wmdWo5Nl",
+    "offers": [
+      {
+        "code": "YUZHOU553",
+        "rate": 0.8,
+        "condition": "适用套餐以结算为准"
+      }
+    ],
+    "note": "YUZHOU553：8折；适用套餐以结算为准"
+  },
+  {
+    "id": "flyv",
+    "name": "飞V",
+    "url": "https://varnexa.flyvaff.com/#/?code=CsS39wa8",
+    "offers": [
+      {
+        "code": "fly20",
+        "rate": 0.8,
+        "condition": "新用户首单"
+      }
+    ],
+    "note": "fly20：8折；新用户首单"
+  },
+  {
+    "id": "invisible",
+    "name": "隐形人",
+    "url": "https://varnexa.invisibleaff.com/#/?code=vJEmz1cz",
+    "offers": [],
+    "note": "资料未提供公开优惠码；请查看结算页活动"
+  },
+  {
+    "id": "sogoyun",
+    "name": "Sogo云",
+    "url": "https://wzjc.sogoyunaff.cc/#/?code=jiM0jtgk",
+    "offers": [
+      {
+        "code": "SOGO10000",
+        "rate": 0.9,
+        "condition": "新用户"
+      }
+    ],
+    "note": "SOGO10000：9折；新用户"
+  },
+  {
+    "id": "laddercloud",
+    "name": "梯子云",
+    "url": "https://varnexa.ladderaff.com/#/?code=SA6F2I6l",
+    "offers": [
+      {
+        "code": "2hy80",
+        "rate": 0.8,
+        "condition": "年付及以上"
+      },
+      {
+        "code": "2hy85",
+        "rate": 0.85,
+        "condition": "年付以下"
+      }
+    ],
+    "note": "2hy80：8折；年付及以上；2hy85：8.5折；年付以下"
+  },
+  {
+    "id": "liulianyun",
+    "name": "榴莲云",
+    "url": "https://a01vipaff.liulianyunaff.com/#/?code=HRmQca3I",
+    "offers": [],
+    "note": "资料未提供公开优惠码；请查看结算页活动"
+  },
+  {
+    "id": "sujie",
+    "name": "速界",
+    "url": "https://work.speedworldaff.cc/#/?code=boUGV5qE",
+    "offers": [
+      {
+        "code": "xf888",
+        "rate": 0.8,
+        "condition": "老顾客充值优惠；不能直接当作套餐折扣"
+      }
+    ],
+    "note": "xf888：8折；老顾客充值优惠；不能直接当作套餐折扣"
+  },
+  {
+    "id": "lingdong",
+    "name": "灵动云",
+    "url": "https://varnexa.lingdongaff.com/#/?code=11ZvpXb2",
+    "offers": [
+      {
+        "code": "wsj888",
+        "rate": null,
+        "condition": "原资料未注明折扣"
+      }
+    ],
+    "note": "wsj888：原资料未注明折扣"
+  },
+  {
+    "id": "kosing",
+    "name": "可信云",
+    "url": "https://work.kosingaff.com/#/?code=HCzZnFdV",
+    "offers": [
+      {
+        "code": "kxy80",
+        "rate": null,
+        "condition": "原资料未注明折扣和适用范围"
+      }
+    ],
+    "note": "kxy80：原资料未注明折扣和适用范围"
+  },
+  {
+    "id": "wavenet",
+    "name": "浪网",
+    "url": "https://varnexa.wavenetaff.com/#/?code=qmDVHHqu",
+    "offers": [],
+    "note": "资料未提供公开优惠码；请查看结算页活动"
+  },
+  {
+    "id": "edgenova",
+    "name": "边缘节点",
+    "url": "https://work.edgenovaaff.cc/#/?code=9Hq16A9L",
+    "offers": [
+      {
+        "code": "xk808",
+        "rate": 0.8,
+        "condition": "适用套餐以结算为准"
+      }
+    ],
+    "note": "xk808：8折；适用套餐以结算为准"
+  },
+  {
+    "id": "kuaili",
+    "name": "快狸",
+    "url": "https://work.kuailicloud.cc/#/?code=QrgSvSXm",
+    "offers": [
+      {
+        "code": "kuaili996",
+        "rate": 0.9,
+        "condition": "适用套餐以结算为准"
+      }
+    ],
+    "note": "kuaili996：9折；适用套餐以结算为准"
+  }
+]

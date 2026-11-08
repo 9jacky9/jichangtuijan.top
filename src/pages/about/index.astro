@@ -1,0 +1,92 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: '首页', item: 'https://jichangtuijan.top/' },
+    { '@type': 'ListItem', position: 2, name: '关于我们与评测标准', item: 'https://jichangtuijan.top/about/' },
+  ],
+};
+---
+
+<BaseLayout
+  title="评测标准与编辑说明｜机场推荐"
+  description="了解 TopPick 机场推荐 (jichangtuijan.top) 的编辑评级体系：为什么我们坚持不编造虚假延迟数据、只收录 1.0x 真实计费倍率专线，并透明算清折后每 GB 流量成本。"
+  canonicalPath="/about/"
+  jsonLd={breadcrumbSchema}
+>
+  <section style="padding: 2.5rem 0; background: var(--tp-bg-alt); border-bottom: 1px solid var(--tp-border);">
+    <div class="tp-container" style="max-width: 900px;">
+      <nav aria-label="面包屑" style="font-size: 0.84rem; color: var(--tp-text-muted); margin-bottom: 0.85rem;">
+        <a href="/">首页</a> &rsaquo; <span>关于我们与评测标准</span>
+      </nav>
+      <span class="tp-badge tp-badge-violet">🛡️ 独立消费测评 · 评测标准说明</span>
+      <h1 style="font-size: clamp(1.75rem, 3.2vw, 2.45rem); font-weight: 900; margin: 0.6rem 0 0.75rem;">
+        关于「机场推荐 · TopPick 选购指南」
+      </h1>
+      <p style="font-size: 1.02rem; color: var(--tp-text-secondary); margin: 0;">
+        用「什么值得买 / Wirecutter」级别的消费精算标准，帮全球中文圈用户挑出每一分钱都花在刀刃上的高品质专线。
+      </p>
+    </div>
+  </section>
+
+  <div class="tp-container" style="max-width: 900px; padding-top: 2.5rem; padding-bottom: 3.5rem;">
+    <div class="tp-bento-card tp-prose" style="padding: 2rem;">
+      <h2>一、 为什么我们要做「算账型」编辑导购站？</h2>
+      <p>
+        市面上充斥着大量复制粘贴的评测站：要么随意编造根本无法复现的“晚高峰 20ms”虚假测速数字，要么对核心节点暗藏 3x~5x 高倍率的猫腻避而不谈。普通用户在购买时，往往被表面的“首月低价”或“大流量”噱头误导。
+      </p>
+      <p>
+        <strong>机场推荐 · TopPick 选购指南（<code>https://jichangtuijan.top</code>）</strong> 从立项第一天起就确立了四条不可妥协的编辑铁律：
+      </p>
+      <ul>
+        <li>
+          <strong>计费规则逐项确认：</strong>资料标注的倍率不代表本站已审计所有节点账单。每次购买仍应核对倍率、上下行统计和重置周期。</li>
+        <li>
+          <strong>资料不能冒充实测：</strong>历史记录仅说明过去曾有相关资料，不能作为当前性能认证。页面不显示虚构评分或评价人数，线路、带宽及平台标签需在购买前核对。</li>
+        <li>
+          <strong>统一周期再算成本：</strong>月付价格除以月额度；每月发放流量的年包用年费除以十二个月的总额度；一次性包用总价除以总量。仅明确的优惠条件参与估算，结算页决定实际金额。</li>
+        <li>
+          <strong>设备规则不作推断：</strong>设备数、并发连接与多人共享可能分别计算。资料未写明的用途应在购买前咨询服务商。</li>
+      </ul>
+
+      <h2>二、 2026 套餐比较维度（不作评分承诺）</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>评估维度</th>
+            <th>核对方式</th>
+            <th>编辑考核细则</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>折后每GB性价比</strong></td>
+            <td>逐项核对</td>
+            <td>分别记录原价、已明确适用的优惠和最终订单金额，未明确的叠加规则不参与推算。</td>
+          </tr>
+          <tr>
+            <td><strong>专线架构与峰值带宽</strong></td>
+            <td>逐项核对</td>
+            <td>是否采用全 IPLC / IEPL 内网专线或 BGP 三网智能优化，单节点峰值是否达到 1000Mbps ~ 2.5Gbps。</td>
+          </tr>
+          <tr>
+            <td><strong>AI 与流媒体原生解锁</strong></td>
+            <td>逐项核对</td>
+            <td>对 ChatGPT Plus、Claude、Midjourney、GitHub Copilot 及 Netflix、Disney+、HBO、Abema 的原生 IP 解锁广度。</td>
+          </tr>
+          <tr>
+            <td><strong>套餐梯度与客户端体验</strong></td>
+            <td>逐项核对</td>
+            <td>是否提供百元内保活年包、一次性不限时流量包、自研一键客户端及无设备数量限制。</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>三、 商业透明化声明</h2>
+      <p>按自己的预算、周期和流量比较套餐。优惠条件已按2026年11月1日提供的资料核对；未注明的折扣不作推算，页面参考金额不代替实际订单。</p>
+    </div>
+  </div>
+</BaseLayout>

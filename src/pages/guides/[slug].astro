@@ -1,0 +1,323 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { getBrandById, allBrands } from '../../data/brands';
+
+export async function getStaticPaths() {
+  const guides = await getCollection('guides');
+  return guides.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry, allGuides: guides },
+  }));
+}
+
+const { entry, allGuides } = Astro.props;
+const { Content, headings } = await entry.render();
+
+const featuredBrandObjects = (entry.data.featuredBrands || [])
+  .map((id: string) => getBrandById(id))
+  .filter(Boolean);
+
+const displayBrands =
+  featuredBrandObjects.length > 0 ? featuredBrandObjects : allBrands.slice(0, 4);
+
+const relatedGuides = allGuides
+  .filter((g: any) => g.slug !== entry.slug && (g.data.category === entry.data.category || g.data.featuredBrands.some((id: string) => entry.data.featuredBrands.includes(id))))
+  .slice(0, 4);
+
+const nextReads = allGuides
+  .filter((g: any) => g.slug !== entry.slug)
+  .map((g: any) => ({
+    g,
+    score:
+      g.data.tags.filter((t: string) => entry.data.tags.includes(t)).length * 2 +
+      (g.data.category === entry.data.category ? 1 : 0),
+  }))
+  .sort(
+    (a: any, b: any) =>
+      b.score - a.score ||
+      new Date(b.g.data.pubDate).getTime() - new Date(a.g.data.pubDate).getTime()
+  )
+  .slice(0, 3)
+  .map((x: any) => x.g);
+
+const tocHeadings = headings.filter((h: any) => h.depth === 2 || h.depth === 3);
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: '首页', item: 'https://jichangtuijan.top/' },
+    { '@type': 'ListItem', position: 2, name: '省钱攻略专栏', item: 'https://jichangtuijan.top/guides/' },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: entry.data.title,
+      item: `https://jichangtuijan.top/guides/${entry.slug}/`,
+    },
+  ],
+};
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: entry.data.title,
+  description: entry.data.description,
+  datePublished: entry.data.pubDate,
+  dateModified: entry.data.updatedDate || entry.data.pubDate,
+  author: {
+    '@type': 'Organization',
+    name: '机场推荐站长',
+    url: 'https://jichangtuijan.top/about/',
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: '机场推荐',
+    url: 'https://jichangtuijan.top/',
+  },
+  inLanguage: 'zh-CN',
+  mainEntityOfPage: `https://jichangtuijan.top/guides/${entry.slug}/`,
+};
+
+const faqSchema =
+  entry.data.faqs && entry.data.faqs.length > 0
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: entry.data.faqs.map((f: any) => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: f.a,
+          },
+        })),
+      }
+    : null;
+
+const schemas = faqSchema ? [breadcrumbSchema, articleSchema, faqSchema] : [breadcrumbSchema, articleSchema];
+---
+
+<BaseLayout
+  title={`${entry.data.title}｜机场推荐`}
+  description={entry.data.description}
+  keywords={entry.data.tags.join(',')}
+  canonicalPath={`/guides/${entry.slug}/`}
+  ogType="article"
+  jsonLd={schemas}
+>
+  <section style="padding: 2.25rem 0 1.75rem; background: var(--tp-bg-alt); border-bottom: 1px solid var(--tp-border);">
+    <div class="tp-container" style="max-width: 1120px;">
+      <nav aria-label="面包屑" style="font-size: 0.84rem; color: var(--tp-text-muted); margin-bottom: 0.85rem;">
+        <a href="/">首页</a> &rsaquo; <a href="/guides/">省钱攻略专栏</a> &rsaquo; <span>{entry.data.category}</span>
+      </nav>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-bottom: 0.75rem;">
+        <span class="tp-badge tp-badge-violet">{entry.data.category}</span>
+        <span class="tp-badge tp-badge-gold">⏱️ 阅读时间 {entry.data.readingTime}</span>
+        <span style="font-size: 0.82rem; color: var(--tp-text-muted);">
+          发布于 {entry.data.pubDate} {entry.data.updatedDate ? `· 更新于 ${entry.data.updatedDate}` : ''}
+        </span>
+      </div>
+
+      <h1 style="font-size: clamp(1.6rem, 3vw, 2.35rem); font-weight: 900; line-height: 1.28; margin: 0 0 1rem;">
+        {entry.data.title}
+      </h1>
+
+      <!-- Buyer Verdict Callout -->
+      <div class="tp-bento-card" style="border-left: 5px solid var(--tp-rose); background: var(--tp-card); padding: 1.1rem 1.35rem;">
+        <div style="font-weight: 800; color: var(--tp-rose); font-size: 0.9rem; margin-bottom: 0.3rem;">
+          一分钟结论：
+        </div>
+        <div style="font-size: 0.96rem; color: var(--tp-text); line-height: 1.65;">
+          {entry.data.buyerVerdict}
+        </div>
+      </div>
+
+      {entry.data.stats && (
+        <div class="tp-stats">
+          {entry.data.stats.map((s: any) => (
+            <div class="tp-stat"><b>{s.value}</b><span>{s.label}</span>{s.note && <small>{s.note}</small>}</div>
+          ))}
+        </div>
+      )}
+      {entry.data.bars && (
+        <div class="tp-bento-card tp-chart">
+          <h3>{entry.data.bars.title}</h3>
+          {entry.data.bars.note && <p>{entry.data.bars.note}</p>}
+          {entry.data.bars.items.map((i: any) => (
+            <div class="tp-bar">
+              <span class="l">{i.label}</span>
+              <span class="t"><i class={i.hot ? 'hot' : ''} style={`width:${Math.max(3, (i.value / Math.max(...entry.data.bars.items.map((x: any) => x.value))) * 100).toFixed(1)}%`}></i></span>
+              <span class="v">{i.text}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+
+  <div class="tp-container" style="max-width: 1120px; padding-top: 2.25rem; padding-bottom: 3.5rem;">
+    <div style="display: grid; grid-template-columns: 310px minmax(0, 1fr); gap: 2.25rem; align-items: start;" class="guide-layout-grid">
+      <!-- MAIN ARTICLE COLUMN -->
+      <div>
+        <article class="tp-bento-card tp-prose" style="padding: 2rem;">
+          <Content />
+        </article>
+
+        <!-- NEXT READS: keep readers on-site -->
+        {nextReads.length > 0 && (
+          <section style="margin-top: 2rem;" aria-label="继续阅读">
+            <h2 style="font-size: 1.25rem; font-weight: 900; margin: 0 0 0.9rem;">
+              📚 读完这篇，接着看
+            </h2>
+            <div class="tp-grid-3">
+              {nextReads.map((rg: any) => (
+                <a href={`/guides/${rg.slug}/`} class="tp-bento-card" style="display: block; text-decoration: none; color: inherit;">
+                  <span class="tp-badge tp-badge-violet" style="margin-bottom: 0.5rem;">{rg.data.category}</span>
+                  <div style="font-weight: 800; line-height: 1.45; margin-bottom: 0.4rem;">{rg.data.title}</div>
+                  <div style="font-size: 0.82rem; color: var(--tp-text-secondary);">{rg.data.readingTime} &rarr;</div>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <!-- EMBEDDED BUYER PRICE COMPARISON CARDS (引导至 /reviews/[slug]/, /ranking/, /coupons/) -->
+        <section style="margin-top: 2.5rem;">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
+            <h2 style="font-size: 1.35rem; font-weight: 900; margin: 0;">
+              文中提到的品牌 · 套餐与评测
+            </h2>
+            <div style="display: flex; gap: 0.5rem;">
+              <a href="/coupons/" class="tp-btn tp-btn-rose" style="padding: 0.4rem 0.85rem; font-size: 0.82rem;">
+                口令总表
+              </a>
+              <a href="/ranking/" class="tp-btn tp-btn-outline" style="padding: 0.4rem 0.85rem; font-size: 0.82rem;">
+                📊 5大排行榜
+              </a>
+            </div>
+          </div>
+
+          <div class="tp-grid-2">
+            {displayBrands.map((b: any) => (
+              <div class="tp-bento-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <span class="tp-badge tp-badge-violet">次序 #{b.rank} · {b.lineType}</span>
+                    <span class="tp-badge tp-badge-rose">折后 ¥{b.lowestMonthlyDiscounted}/月起</span>
+                  </div>
+                  <h3 style="margin: 0 0 0.35rem; font-size: 1.2rem; font-weight: 900;">
+                    <a href={`/reviews/${b.id}/`} style="color: var(--tp-text);">{b.name}</a>
+                  </h3>
+                  <p style="font-size: 0.84rem; color: var(--tp-text-secondary); margin: 0 0 0.75rem;">
+                    {b.tagline}
+                  </p>
+                  <div style="font-size: 0.8rem; background: var(--tp-bg-alt); padding: 0.55rem 0.75rem; border-radius: 8px; margin-bottom: 0.9rem;">
+                    <div>口令：<strong>{b.couponLabel}</strong></div>
+                    <div>最低单价：<strong>¥{b.bestValueCostPerGB.toFixed(3)}/GB</strong> · {b.peakBandwidth}</div>
+                  </div>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                  <a href={`/reviews/${b.id}/`} class="tp-btn tp-btn-violet" style="flex: 1; font-size: 0.84rem;">
+                    查看 {b.name} 套餐资料 & 比价表 &rarr;
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <!-- ARTICLE SPECIFIC FAQ -->
+        {entry.data.faqs && entry.data.faqs.length > 0 && (
+          <section style="margin-top: 2.5rem;">
+            <h2 style="font-size: 1.35rem; font-weight: 900; margin: 0 0 1rem;">
+              ❓ 本篇攻略常见疑问解答 (FAQ)
+            </h2>
+            <div style="display: flex; flex-direction: column; gap: 0.9rem;">
+              {entry.data.faqs.map((faq: any) => (
+                <div class="tp-bento-card" style="padding: 1.15rem 1.4rem;">
+                  <h3 style="margin: 0 0 0.4rem; font-size: 1rem; font-weight: 800; color: var(--tp-violet);">
+                    Q：{faq.q}
+                  </h3>
+                  <p style="margin: 0; font-size: 0.92rem; color: var(--tp-text-secondary);">
+                    {faq.a}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
+
+      <!-- STICKY SIDEBAR: TOC + QUICK TOOLS -->
+      <aside style="position: sticky; top: 88px; display: flex; flex-direction: column; gap: 1.25rem;">
+        {tocHeadings.length > 0 && (
+          <div class="tp-bento-card" style="padding: 1.25rem;">
+            <div style="font-weight: 800; font-size: 0.95rem; margin-bottom: 0.75rem; color: var(--tp-violet);">
+              📑 文章目录导航
+            </div>
+            <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.84rem; max-height: 340px; overflow-y: auto;">
+              {tocHeadings.map((h: any) => (
+                <li style={`margin-bottom: 0.45rem; padding-left: ${h.depth === 3 ? '0.85rem' : '0'};`}>
+                  <a href={`#${h.slug}`} style="color: var(--tp-text-secondary);">
+                    {h.text}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <div class="tp-bento-card" style="padding: 1.25rem; border: 1.5px solid var(--tp-rose);">
+          <span class="tp-badge tp-badge-rose" style="margin-bottom: 0.5rem;">快捷工具</span>
+          <h3 style="margin: 0 0 0.5rem; font-size: 1.05rem; font-weight: 800;">
+            不确定选哪家最划算？
+          </h3>
+          <p style="font-size: 0.84rem; color: var(--tp-text-secondary); margin: 0 0 0.9rem;">
+            使用 34 家每 GB 流量单价排序大表或一键复制 7 折资料优惠码：
+          </p>
+          <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <a href="/coupons/" class="tp-btn tp-btn-rose" style="width: 100%; font-size: 0.85rem;">
+              查看 7 折口令及条件
+            </a>
+            <a href="/compare/" class="tp-btn tp-btn-violet" style="width: 100%; font-size: 0.85rem;">
+              📊 34家每GB单价对比大表
+            </a>
+            <a href="/ranking/" class="tp-btn tp-btn-outline" style="width: 100%; font-size: 0.85rem;">
+              🏆 查看 2026 五大分类榜
+            </a>
+          </div>
+        </div>
+
+        {relatedGuides.length > 0 && (
+          <div class="tp-bento-card" style="padding: 1.25rem;">
+            <div style="font-weight: 800; font-size: 0.95rem; margin-bottom: 0.75rem;">
+              📖 延伸精算报告
+            </div>
+            <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.84rem;">
+              {relatedGuides.map((rg: any) => (
+                <li style="margin-bottom: 0.65rem; padding-bottom: 0.65rem; border-bottom: 1px dashed var(--tp-border);">
+                  <a href={`/guides/${rg.slug}/`} style="font-weight: 700; color: var(--tp-text);">
+                    {rg.data.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </aside>
+    </div>
+  </div>
+
+  <style>
+    .guide-layout-grid > * { min-width: 0; max-width: 100%; }
+    @media (min-width: 921px) { .guide-layout-grid > aside { order: -1; } }
+    @media (max-width: 600px) { .guide-layout-grid :global(article.tp-prose) { padding: 1.1rem !important; } .guide-layout-grid aside { position: static !important; } }
+    @media (max-width: 920px) {
+      .guide-layout-grid {
+        grid-template-columns: minmax(0, 1fr) !important;
+      }
+    }
+  </style>
+</BaseLayout>

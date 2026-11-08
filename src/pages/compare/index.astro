@@ -1,0 +1,256 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { allBrands } from '../../data/brands';
+
+const compareFaqs = [
+  {
+    "q": "优惠码是否适用于全部套餐？",
+    "a": "不一定。大佬云dly88和闪电鼠sd88仅限月付；首单、年包排除与充值优惠请查看口令总表的逐项说明。没有注明折扣的口令不推算优惠幅度。"
+  },
+  {
+    "q": "排序代表真实用户评价吗？",
+    "a": "不是。默认顺序是资料展示顺序，不是投票结果或性能保证。可以按价格、周期与流量自行筛选，实际服务表现需要在自己的网络验证。"
+  },
+  {
+    "q": "月均价与每GB价格如何理解？",
+    "a": "年付月均价是全年付款除以十二，并非可按月支付。每GB为资料计算值，取决于周期、额度与计费条件；未使用额度和支付费用可能改变实际成本。"
+  },
+  {
+    "q": "购买前应该确认哪些信息？",
+    "a": "确认套餐原价、优惠资格、最终金额、额度重置、设备限制和售后条款。平台访问条件与账号权限以平台官方说明为准。"
+  }
+];
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: '首页', item: 'https://jichangtuijan.top/' },
+    { '@type': 'ListItem', position: 2, name: '34家机场参数与每GB单价横向比价表', item: 'https://jichangtuijan.top/compare/' },
+  ],
+};
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: compareFaqs.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
+---
+
+<BaseLayout
+  title="34家机场价格与每GB单价对比表（可排序）｜机场推荐"
+  description="34 家机场套餐价格对比表：可按月付价、年付价、口令折后价和每 GB 单价排序，附线路标注与带宽标注。价格为资料参考，以结算页为准。"
+  canonicalPath="/compare/"
+  jsonLd={[breadcrumbSchema, faqSchema]}
+>
+  <section style="padding: 2.5rem 0 1.75rem; background: var(--tp-bg-alt); border-bottom: 1px solid var(--tp-border);">
+    <div class="tp-container">
+      <nav aria-label="面包屑" style="font-size: 0.84rem; color: var(--tp-text-muted); margin-bottom: 0.85rem;">
+        <a href="/">首页</a> &rsaquo; <span>34家机场参数与每GB单价横向比价表</span>
+      </nav>
+      <span class="tp-badge tp-badge-violet">📊 编辑交互式精算大表 · 点击任意表头实时排序</span>
+      <h1 style="font-size: clamp(1.75rem, 3.2vw, 2.45rem); font-weight: 900; margin: 0.6rem 0 0.75rem;">
+        2026 全网 34 家专线机场参数与每 GB 单价横向比价表
+      </h1>
+      <p style="color: var(--tp-text-secondary); max-width: 840px; margin: 0 0 1.25rem; font-size: 0.98rem;">
+        把 34 家品牌的底裤全部扒开对比！点击下方快捷排序按钮或直接<strong>点击表格列标题</strong>，即可按<strong>「年付最低价」、「月付原价」、「折后月付价」、「每GB单价（元/GB）」、「峰值带宽」与「优惠力度」</strong>升序/降序排列。
+      </p>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 0.55rem; align-items: center;">
+        <span style="font-size: 0.85rem; font-weight: 800; color: var(--tp-violet);">⚡ 快捷排序：</span>
+        <button type="button" class="tp-btn tp-btn-violet sort-quick-btn" data-sort-col="rank" data-sort-dir="asc" style="padding: 0.42rem 0.85rem; font-size: 0.82rem;">
+          默认综合排名
+        </button>
+        <button type="button" class="tp-btn tp-btn-outline sort-quick-btn" data-sort-col="discounted" data-sort-dir="asc" style="padding: 0.42rem 0.85rem; font-size: 0.82rem;">
+          按折后月付从低到高
+        </button>
+        <button type="button" class="tp-btn tp-btn-outline sort-quick-btn" data-sort-col="annual" data-sort-dir="asc" style="padding: 0.42rem 0.85rem; font-size: 0.82rem;">
+          🎓 按年付总价从低到高
+        </button>
+        <button type="button" class="tp-btn tp-btn-outline sort-quick-btn" data-sort-col="costpergb" data-sort-dir="asc" style="padding: 0.42rem 0.85rem; font-size: 0.82rem;">
+          💎 按每GB单价从低到高
+        </button>
+        <button type="button" class="tp-btn tp-btn-outline sort-quick-btn" data-sort-col="discount" data-sort-dir="asc" style="padding: 0.42rem 0.85rem; font-size: 0.82rem;">
+          按折扣力度(7折优先)
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <div class="tp-container" style="padding-top: 2rem; padding-bottom: 3rem;">
+    <div class="tp-table-wrap">
+      <table class="tp-table" id="compareMasterTable">
+        <thead>
+          <tr>
+            <th data-col="rank" style="cursor: pointer;">综合排名 ↕</th>
+            <th>品牌名称</th>
+            <th>专线类型</th>
+            <th data-col="bandwidth" style="cursor: pointer;">峰值带宽 ↕</th>
+            <th data-col="annual" style="cursor: pointer;">年付最低价 ↕</th>
+            <th data-col="monthly" style="cursor: pointer;">月付最低原价 ↕</th>
+            <th data-col="discounted" style="cursor: pointer; color: var(--tp-rose);">折后月付价 ↕</th>
+            <th data-col="costpergb" style="cursor: pointer; color: var(--tp-emerald);">最低每GB单价 ↕</th>
+            <th data-col="discount" style="cursor: pointer;">优惠码 / 力度 ↕</th>
+            <th>直达与评测</th>
+          </tr>
+        </thead>
+        <tbody id="compareTableBody">
+          {allBrands.map((b) => {
+            const bwNumeric = b.peakBandwidth.includes('2.5Gbps') ? 2500 : b.peakBandwidth.includes('1000Mbps') ? 1000 : 800;
+            return (
+              <tr
+                data-rank={b.rank}
+                data-bandwidth={bwNumeric}
+                data-annual={b.lowestAnnualPrice ?? 9999}
+                data-monthly={b.lowestMonthlyOriginal}
+                data-discounted={b.lowestMonthlyDiscounted}
+                data-costpergb={b.bestValueCostPerGB}
+                data-discount={b.discountRate}
+              >
+                <td>
+                  <span style="font-weight: 800; color: var(--tp-violet);">#{b.rank}</span>
+                </td>
+                <td>
+                  <a href={`/reviews/${b.id}/`} style="font-weight: 800; font-size: 0.96rem; color: var(--tp-text);">
+                    {b.name}
+                  </a>
+                  {b.hasRealSpeedRecord && (
+                    <div style="font-size: 0.72rem; color: var(--tp-emerald); font-weight: 700;">✓ 实测记录</div>
+                  )}
+                </td>
+                <td>
+                  <span class="tp-badge tp-badge-violet">{b.lineType}</span>
+                  <div style="font-size: 0.74rem; color: var(--tp-text-muted); margin-top: 0.15rem;">{b.multiplier} · {b.deviceLimit}</div>
+                </td>
+                <td>
+                  <strong>{b.peakBandwidth}</strong>
+                </td>
+                <td>
+                  {b.lowestAnnualPrice ? (
+                    <div>
+                      <strong>¥{b.lowestAnnualPrice}/年</strong>
+                      <div style="font-size: 0.74rem; color: var(--tp-text-muted);">合 ¥{b.lowestAnnualMonthlyEq}/月</div>
+                    </div>
+                  ) : (
+                    <span style="color: var(--tp-text-muted); font-size: 0.8rem;">无小年包</span>
+                  )}
+                </td>
+                <td>
+                  ¥{b.lowestMonthlyOriginal}/月
+                  <div style="font-size: 0.74rem; color: var(--tp-text-muted);">{b.lowestMonthlyTrafficGB}GB/月</div>
+                </td>
+                <td>
+                  <strong style="color: var(--tp-rose); font-size: 1.04rem;">¥{b.lowestMonthlyDiscounted.toFixed(2)}/月</strong>
+                </td>
+                <td>
+                  <span class="tp-badge tp-badge-emerald">¥{b.bestValueCostPerGB.toFixed(3)}/GB</span>
+                </td>
+                <td>
+                  {b.couponCode ? (
+                    <div>
+                      <code style="background: var(--tp-rose-light); color: var(--tp-rose); padding: 0.15rem 0.45rem; border-radius: 5px; font-weight: 900;">
+                        {b.couponCode}
+                      </code>
+                      <div style="font-size: 0.74rem; color: var(--tp-text-secondary); margin-top: 0.15rem;">
+                        {b.discountRate === 0.7 ? '7折优惠码' : b.discountRate === 0.8 ? '8折码' : b.discountRate === 0.85 ? '85折码' : '9折码'}
+                      </div>
+                    </div>
+                  ) : (
+                    <span style="font-size: 0.78rem; color: var(--tp-text-secondary);">{b.couponLabel}</span>
+                  )}
+                </td>
+                <td>
+                  <div style="display: flex; gap: 0.35rem;">
+                    <button
+                      type="button"
+                      class="tp-btn tp-btn-rose"
+                      style="padding: 0.36rem 0.65rem; font-size: 0.78rem;"
+                      data-copy-code={b.couponCode || ''}
+                      data-brand-name={b.name}
+                      data-aff-url={b.affUrl}
+                    >
+                      {b.couponCode ? '前往官网' : '官网'} &nearr;
+                    </button>
+                    <a href={`/reviews/${b.id}/`} class="tp-btn tp-btn-outline" style="padding: 0.36rem 0.6rem; font-size: 0.78rem;">
+                      评测
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+
+    <section style="max-width: 920px; margin: 3rem auto 0;">
+      <h2 style="font-size: 1.35rem; font-weight: 800; margin-bottom: 1rem;">❓ 比价表使用说明与算账问答</h2>
+      <div style="display: flex; flex-direction: column; gap: 0.9rem;">
+        {compareFaqs.map((faq) => (
+          <div class="tp-bento-card" style="padding: 1.15rem 1.4rem;">
+            <h3 style="margin: 0 0 0.4rem; font-size: 1rem; font-weight: 800; color: var(--tp-violet);">Q：{faq.q}</h3>
+            <p style="margin: 0; font-size: 0.92rem; color: var(--tp-text-secondary);">{faq.a}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>
+
+  <script is:inline>
+    (function () {
+      var tbody = document.getElementById('compareTableBody');
+      var headers = Array.prototype.slice.call(document.querySelectorAll('#compareMasterTable th[data-col]'));
+      var quickBtns = Array.prototype.slice.call(document.querySelectorAll('.sort-quick-btn'));
+      var currentCol = 'rank';
+      var currentDir = 'asc';
+
+      function sortRows(col, dir) {
+        if (!tbody) return;
+        var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
+        rows.sort(function (a, b) {
+          var vA = parseFloat(a.getAttribute('data-' + col) || '0');
+          var vB = parseFloat(b.getAttribute('data-' + col) || '0');
+          return dir === 'asc' ? vA - vB : vB - vA;
+        });
+        rows.forEach(function (r) {
+          tbody.appendChild(r);
+        });
+      }
+
+      headers.forEach(function (th) {
+        th.addEventListener('click', function () {
+          var col = th.getAttribute('data-col');
+          if (!col) return;
+          if (currentCol === col) {
+            currentDir = currentDir === 'asc' ? 'desc' : 'asc';
+          } else {
+            currentCol = col;
+            currentDir = col === 'bandwidth' ? 'desc' : 'asc';
+          }
+          sortRows(currentCol, currentDir);
+        });
+      });
+
+      quickBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var col = btn.getAttribute('data-sort-col');
+          var dir = btn.getAttribute('data-sort-dir') || 'asc';
+          if (!col) return;
+          currentCol = col;
+          currentDir = dir;
+          quickBtns.forEach(function (b) {
+            b.classList.remove('tp-btn-violet');
+            b.classList.add('tp-btn-outline');
+          });
+          btn.classList.remove('tp-btn-outline');
+          btn.classList.add('tp-btn-violet');
+          sortRows(col, dir);
+        });
+      });
+    })();
+  </script>
+</BaseLayout>

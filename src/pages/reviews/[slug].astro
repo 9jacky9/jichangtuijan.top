@@ -1,0 +1,461 @@
+---
+import offerLedger from "../../data/couponLedger.json";
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { allBrands, type BrandItem } from '../../data/brands';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const guides = await getCollection('guides');
+  return allBrands.map((brand) => {
+    const alternatives = allBrands
+      .filter(
+        (b) =>
+          b.id !== brand.id &&
+          (b.lineType === brand.lineType ||
+            Math.abs(b.lowestMonthlyDiscounted - brand.lowestMonthlyDiscounted) <= 5)
+      )
+      .slice(0, 4);
+
+    const relatedGuides = guides
+      .filter((g) => g.data.featuredBrands.includes(brand.id))
+      .slice(0, 4);
+
+    return {
+      params: { slug: brand.id },
+      props: { brand, alternatives, relatedGuides },
+    };
+  });
+}
+
+interface Props {
+  brand: BrandItem;
+  alternatives: BrandItem[];
+  relatedGuides: any[];
+}
+
+const { brand, alternatives, relatedGuides } = Astro.props;
+
+const _prices = allBrands.map((b) => b.lowestMonthlyOriginal).sort((a, c) => a - c);
+const _cheaperPrice = _prices.filter((v) => v < brand.lowestMonthlyOriginal).length;
+const _myGb = brand.lowestMonthlyOriginal / brand.lowestMonthlyTrafficGB;
+const _gbs = allBrands.map((b) => b.lowestMonthlyOriginal / b.lowestMonthlyTrafficGB).sort((a, c) => a - c);
+const _cheaperGb = _gbs.filter((v) => v < _myGb).length;
+const _bars = brand.plans.map((p) => ({
+  label: p.name.replace(/[【】]/g, ''),
+  cycle: p.cycle,
+  value: p.cycle === '年付' ? p.originalPrice / 12 / p.trafficGB : p.originalPrice / p.trafficGB,
+}));
+const _maxBar = Math.max(..._bars.map((x) => x.value));
+
+const allPrices = brand.plans.map((p) => p.discountedPrice);
+const minPrice = Math.min(...allPrices);
+const maxPrice = Math.max(...allPrices);
+
+const extraFaqs = [
+  ...brand.faqs,
+  {
+    q: `${brand.name} 的节点是 1.0x 计费倍率吗？会不会偷跑流量？`,
+    a: `资料记录的倍率为 ${brand.multiplier}。这不是账单审计结论，购买前应核对所选节点、上下行计费和重置规则。`,
+  },
+  {
+    q: `${brand.name} 支持多少台设备同时在线？支持什么协议？`,
+    a: `${brand.name} 的设备策略为「${brand.deviceLimit}」，采用 ${brand.protocol}，全面兼容 Windows、macOS、iOS (Shadowrocket/Stash)、Android 以及 OpenWrt 软路由。`,
+  },
+];
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: '首页', item: 'https://jichangtuijan.top/' },
+    { '@type': 'ListItem', position: 2, name: '2026 排行榜', item: 'https://jichangtuijan.top/ranking/' },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: `${brand.name} 评测资料与套餐比价`,
+      item: `https://jichangtuijan.top/reviews/${brand.id}/`,
+    },
+  ],
+};
+
+const productSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: `${brand.name} (${brand.lineType})`,
+  description: `${brand.name} 2026 套餐资料整理：${brand.tagline}。${brand.buyerSummary}`,
+  brand: {
+    '@type': 'Brand',
+    name: brand.name,
+  },
+  offers: {
+    '@type': 'AggregateOffer',
+    priceCurrency: 'CNY',
+    lowPrice: minPrice.toFixed(2),
+    highPrice: maxPrice.toFixed(2),
+    offerCount: brand.plans.length,
+    offers: brand.plans.map((p) => ({
+      '@type': 'Offer',
+      name: `${brand.name} - ${p.name} (${p.trafficGB}GB/${p.cycle})`,
+      price: p.discountedPrice.toFixed(2),
+      priceCurrency: 'CNY',
+      url: `https://jichangtuijan.top/reviews/${brand.id}/`,
+    })),
+  },
+};
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: extraFaqs.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
+---
+
+<BaseLayout
+  title={`${brand.name}怎么样？2026套餐价格、优惠码${brand.couponCode ? '(' + brand.couponCode + ')' : ''}与使用条件｜机场推荐`}
+  description={`2026 ${brand.name} 套餐资料整理与省钱算账指南。搭载 ${brand.lineType}(${brand.peakBandwidth})，${brand.couponLabel}，折后月付低至 ¥${brand.lowestMonthlyDiscounted}/月，每GB成本 ¥${brand.bestValueCostPerGB.toFixed(3)} 起。附全档位套餐比价表、优缺点盘点与选购建议。`}
+  canonicalPath={`/reviews/${brand.id}/`}
+  jsonLd={[breadcrumbSchema, productSchema, faqSchema]}
+>
+<section class="tp-container" style="padding-top:1.4rem;padding-bottom:1.4rem" aria-label="已核对优惠条件"><h2 style="font-size:1.15rem;font-weight:700">本品牌优惠与适用条件</h2><p style="font-size:.85rem">优惠资料核对：2026年11月1日。这里核对的是提供的优惠资料，不表示已完成实时结算验证。首单、周期、充值与叠加条件请逐项确认；未提供优惠码的品牌不编造口令。</p>{offerLedger.filter(o=>o.id===brand.id).map(o=><div><p>{o.note}</p>{o.offers.map(c=><p><code style="font-size:1.1rem;font-weight:800">{c.code}</code> · {c.condition}</p>)}</div>)}</section>
+  <!-- HERO HEADER -->
+  <section style="padding: 2.5rem 0 2rem; background: radial-gradient(circle at 80% 20%, var(--tp-violet-light) 0%, transparent 45%), var(--tp-bg-alt); border-bottom: 1px solid var(--tp-border);">
+    <div class="tp-container">
+      <nav aria-label="面包屑" style="font-size: 0.84rem; color: var(--tp-text-muted); margin-bottom: 0.9rem;">
+        <a href="/">首页</a> &rsaquo; <a href="/ranking/">2026 排行榜</a> &rsaquo; <span>{brand.name} 套餐资料与精算</span>
+      </nav>
+
+      <div style="display: grid; grid-template-columns: 1.7fr 1fr; gap: 2rem; align-items: start;" class="review-hero-grid">
+        <div>
+          <div style="display: flex; flex-wrap: wrap; gap: 0.45rem; margin-bottom: 0.75rem;">
+            <span class="tp-badge tp-badge-violet">总榜 NO.{brand.rank}</span>
+            <span class="tp-badge tp-badge-gold">{brand.tierBadge}</span>
+            {brand.hasRealSpeedRecord && <span class="tp-badge tp-badge-emerald">有历史测试记录</span>}
+          </div>
+
+          <h1 style="font-size: clamp(1.8rem, 3.3vw, 2.55rem); font-weight: 900; margin: 0 0 0.65rem; line-height: 1.22;">
+            {brand.name} 2026 套餐资料整理与套餐每 GB 比价
+          </h1>
+          <p style="font-size: 1.05rem; color: var(--tp-text-secondary); margin: 0 0 1.25rem;">
+            {brand.tagline}
+          </p>
+
+          <!-- Core Specs Grid -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem; margin-bottom: 1.4rem;">
+            <div class="tp-bento-card" style="padding: 0.85rem;">
+              <div style="font-size: 0.75rem; color: var(--tp-text-muted);">专线底层架构</div>
+              <div style="font-weight: 800; font-size: 0.96rem; color: var(--tp-violet);">{brand.lineType}</div>
+            </div>
+            <div class="tp-bento-card" style="padding: 0.85rem;">
+              <div style="font-size: 0.75rem; color: var(--tp-text-muted);">官方标称峰值</div>
+              <div style="font-weight: 800; font-size: 0.96rem;">{brand.peakBandwidth}</div>
+            </div>
+            <div class="tp-bento-card" style="padding: 0.85rem;">
+              <div style="font-size: 0.75rem; color: var(--tp-text-muted);">计费倍率 / 设备数</div>
+              <div style="font-weight: 800; font-size: 0.92rem; color: var(--tp-emerald);">{brand.multiplier} · 不限设备</div>
+            </div>
+            <div class="tp-bento-card" style="padding: 0.85rem;">
+              <div style="font-size: 0.75rem; color: var(--tp-text-muted);">资料展示序号</div>
+              <div style="font-weight: 900; font-size: 1.08rem; color: var(--tp-gold);">编号 {brand.rank}</div>
+            </div>
+          </div>
+
+          <div style="font-size: 0.88rem; color: var(--tp-text-secondary);">
+            <strong>🌍 覆盖节点区域：</strong>{brand.regions} &nbsp;|&nbsp;
+            <strong>🎬 原生解锁支持：</strong>{brand.unlockSupport.join(' / ')}
+          </div>
+        </div>
+
+        <!-- COUPON & CTA HIGHLIGHT BOX -->
+        <aside class="tp-bento-card" style="border: 2px solid var(--tp-rose); background: var(--tp-card);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
+            <span class="tp-badge tp-badge-rose">官网入口（推广链接）</span>
+            <span style="font-size: 0.78rem; color: var(--tp-text-muted);">2026年11月请核对订单</span>
+          </div>
+
+          <div style="font-weight: 800; font-size: 1.05rem; margin-bottom: 0.4rem;">
+            {brand.name} 编辑省钱口令
+          </div>
+          <p style="font-size: 0.84rem; color: var(--tp-text-secondary); margin: 0 0 0.9rem;">
+            {brand.cycleDiscountNote}
+          </p>
+
+          {brand.couponCode ? (
+            <div style="background: var(--tp-rose-light); border: 1.5px dashed var(--tp-rose); border-radius: 10px; padding: 0.8rem; text-align: center; margin-bottom: 1rem;">
+              <div style="font-size: 0.75rem; color: var(--tp-rose); font-weight: 700;">结算页输入口令：</div>
+              <div style="font-family: monospace; font-size: 1.55rem; font-weight: 900; color: var(--tp-rose); letter-spacing: 0.05em;">
+                {brand.couponCode}
+              </div>
+            </div>
+          ) : (
+            <div style="background: var(--tp-emerald-light); border: 1px dashed var(--tp-emerald); border-radius: 10px; padding: 0.8rem; text-align: center; margin-bottom: 1rem; color: var(--tp-emerald); font-weight: 800; font-size: 0.92rem;">
+              ✅ 免输口令 · 结算选长周期自动减免
+            </div>
+          )}
+
+          <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 1rem; padding: 0.55rem 0.75rem; background: var(--tp-bg-alt); border-radius: 8px;">
+            <span>折后月付低至：<strong style="color: var(--tp-rose);">¥{brand.lowestMonthlyDiscounted}/月</strong></span>
+            <span>每GB低至：<strong style="color: var(--tp-emerald);">¥{brand.bestValueCostPerGB.toFixed(3)}</strong></span>
+          </div>
+
+          <button
+            type="button"
+            class="tp-btn tp-btn-rose"
+            style="width: 100%; font-size: 1rem; padding: 0.8rem 1rem;"
+            data-copy-code={brand.couponCode || ''}
+            data-brand-name={brand.name}
+            data-aff-url={brand.affUrl}
+          >
+            {brand.couponCode ? `📋 复制优惠码「${brand.couponCode}」并前往官网` : `🚀 直达 ${brand.name} 官方网站选购`} &nearr;
+          </button>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <div class="tp-container" style="padding-top: 2.5rem; padding-bottom: 3rem;">
+    <!-- 0. DATA AT A GLANCE (computed from the brand data) -->
+    <section style="margin-bottom: 2.5rem;" aria-label="数据速览">
+      <div class="tp-stats">
+        <div class="tp-stat"><b>¥{brand.lowestMonthlyOriginal}</b><span>月付起价（标价）</span><small>入门档 {brand.lowestMonthlyTrafficGB} GB</small></div>
+        <div class="tp-stat"><b>¥{_myGb.toFixed(3)}</b><span>入门档每 GB</span><small>标价口径，不含口令</small></div>
+        <div class="tp-stat"><b>{_cheaperPrice} 家更低</b><span>月付起价的位置</span><small>共 34 家</small></div>
+        <div class="tp-stat"><b>{_cheaperGb} 家更低</b><span>入门档每 GB 的位置</span><small>共 34 家</small></div>
+      </div>
+      <div class="tp-bento-card tp-chart">
+        <h3>{brand.name} 各档每 GB 的粗略单价（标价）</h3>
+        <p>年付先摊到 12 个月再除以月流量；柱子越短越便宜；不含口令折扣，不同周期不能直接横比。</p>
+        {_bars.map((b) => (
+          <div class="tp-bar">
+            <span class="l">{b.label}</span>
+            <span class="t"><i class={b.cycle === '年付' ? 'hot' : ''} style={`width:${Math.max(3, (b.value / _maxBar) * 100).toFixed(1)}%`}></i></span>
+            <span class="v">¥{b.value.toFixed(3)}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 1. FULL PLAN COMPARISON TABLE -->
+    <section style="margin-bottom: 3rem;">
+      <h2 style="font-size: 1.5rem; font-weight: 900; margin: 0 0 0.5rem;">
+        一、 {brand.name} 全档位套餐精算比价表（折后价 & 每 GB 成本）
+      </h2>
+      <p style="color: var(--tp-text-secondary); margin: 0 0 1.25rem; font-size: 0.94rem;">
+        以下数据严格基于 {brand.name} 官方公开套餐与资料已列出优惠码（{brand.couponCode || '免码周期折扣'}）精算得出，帮你一眼看穿哪个档位每 GB 流量最便宜：
+      </p>
+
+      <div class="tp-table-wrap">
+        <table class="tp-table">
+          <thead>
+            <tr>
+              <th>套餐档位名称</th>
+              <th>计费周期</th>
+              <th>月流量配额 (1.0x)</th>
+              <th>官方原价</th>
+              <th>用券/周期折后实付</th>
+              <th>折合月均支出</th>
+              <th>真实每GB成本</th>
+              <th>编辑点评与亮点</th>
+              <th>立即抢购</th>
+            </tr>
+          </thead>
+          <tbody>
+            {brand.plans.map((p) => (
+              <tr>
+                <td>
+                  <strong style="font-size: 0.98rem;">{p.name}</strong>
+                </td>
+                <td>
+                  <span class={`tp-badge ${p.cycle === '年付' ? 'tp-badge-violet' : p.cycle === '一次性' ? 'tp-badge-emerald' : 'tp-badge-gold'}`}>
+                    {p.cycle}
+                  </span>
+                </td>
+                <td>
+                  <strong>{p.trafficGB >= 1000 ? `${(p.trafficGB / 1000).toFixed(1)} TB (${p.trafficGB}GB)` : `${p.trafficGB} GB`}</strong>
+                  {p.cycle === '一次性' ? ' (有效期以条款为准)' : '/月'}
+                </td>
+                <td>
+                  ¥{p.originalPrice.toFixed(2)}/{p.cycle === '年付' ? '年' : p.cycle === '一次性' ? '次' : '月'}
+                </td>
+                <td>
+                  <strong style="color: var(--tp-rose); font-size: 1.05rem;">
+                    ¥{p.discountedPrice.toFixed(2)}/{p.cycle === '年付' ? '年' : p.cycle === '一次性' ? '次' : '月'}
+                  </strong>
+                  {p.couponApplicable && brand.couponCode && (
+                    <div style="font-size: 0.74rem; color: var(--tp-rose);">需填码 {brand.couponCode}</div>
+                  )}
+                </td>
+                <td>
+                  <strong style="color: var(--tp-violet);">
+                    {p.cycle === '一次性' ? '不限时买断' : `¥${p.monthlyEquivalent.toFixed(2)}/月`}
+                  </strong>
+                </td>
+                <td>
+                  <span class="tp-badge tp-badge-emerald">¥{p.costPerGB.toFixed(3)}/GB</span>
+                </td>
+                <td>
+                  <span style="font-size: 0.83rem; color: var(--tp-text-secondary);">
+                    {p.highlight || '主力高性价比专线档位'}
+                  </span>
+                </td>
+                <td>
+                  <button
+                    type="button"
+                    class="tp-btn tp-btn-violet"
+                    style="padding: 0.4rem 0.75rem; font-size: 0.8rem;"
+                    data-copy-code={p.couponApplicable ? brand.couponCode || '' : ''}
+                    data-brand-name={brand.name}
+                    data-aff-url={brand.affUrl}
+                  >
+                    选购此档 &nearr;
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 2. BUYER VERDICT & WHICH PLAN TO PICK -->
+    <section style="margin-bottom: 3rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;" class="review-verdict-grid">
+      <div class="tp-bento-card" style="border-left: 5px solid var(--tp-violet);">
+        <span class="tp-badge tp-badge-violet" style="margin-bottom: 0.6rem;">💡 编辑档位选购建议</span>
+        <h2 style="font-size: 1.3rem; font-weight: 800; margin: 0 0 0.75rem;">
+          {brand.name} 哪一档套餐最值得买？
+        </h2>
+        <p style="font-size: 0.96rem; line-height: 1.75; color: var(--tp-text-secondary); margin: 0 0 1rem;">
+          {brand.bestPlanPick}
+        </p>
+        <div style="background: var(--tp-bg-alt); padding: 0.85rem 1rem; border-radius: 10px; font-size: 0.88rem;">
+          <strong>小结：</strong>{brand.buyerSummary}
+        </div>
+      </div>
+
+      <div class="tp-bento-card" style="border-left: 5px solid var(--tp-gold);">
+        <span class="tp-badge tp-badge-gold" style="margin-bottom: 0.6rem;">⚖️ 优缺点客观盘点</span>
+        <h2 style="font-size: 1.3rem; font-weight: 800; margin: 0 0 0.75rem;">
+          入手前必看的真实优劣势
+        </h2>
+        <div style="margin-bottom: 0.9rem;">
+          <div style="font-weight: 800; color: var(--tp-emerald); font-size: 0.9rem; margin-bottom: 0.35rem;">
+            ✅ 核心优势 (Pros)：
+          </div>
+          <ul style="margin: 0; padding-left: 1.2rem; font-size: 0.89rem; color: var(--tp-text-secondary);">
+            {brand.pros.map((pro) => (
+              <li style="margin-bottom: 0.3rem;">{pro}</li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <div style="font-weight: 800; color: var(--tp-rose); font-size: 0.9rem; margin-bottom: 0.35rem;">
+            ⚠️ 注意事项与短板 (Cons)：
+          </div>
+          <ul style="margin: 0; padding-left: 1.2rem; font-size: 0.89rem; color: var(--tp-text-secondary);">
+            {brand.cons.map((con) => (
+              <li style="margin-bottom: 0.3rem;">{con}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. ALTERNATIVES COMPARISON -->
+    <section style="margin-bottom: 3rem;">
+      <h2 style="font-size: 1.45rem; font-weight: 900; margin: 0 0 0.5rem;">
+        二、 {brand.name} 同价位 / 同架构替代方案横向对比
+      </h2>
+      <p style="color: var(--tp-text-secondary); margin: 0 0 1.25rem; font-size: 0.94rem;">
+        编辑法则从不单押一家！如果你在纠结 {brand.name} 与同档位其他专线机场怎么选，可以参考以下 4 家同级对手的参数对比：
+      </p>
+
+      <div class="tp-grid-2">
+        {alternatives.map((alt) => (
+          <div class="tp-bento-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span class="tp-badge tp-badge-violet">次序 #{alt.rank} · {alt.lineType}</span>
+                <span style="font-size: 0.82rem; font-weight: 800; color: var(--tp-rose);">
+                  折后 ¥{alt.lowestMonthlyDiscounted}/月起
+                </span>
+              </div>
+              <h3 style="margin: 0 0 0.35rem; font-size: 1.2rem; font-weight: 900;">
+                <a href={`/reviews/${alt.id}/`} style="color: var(--tp-text);">{alt.name}</a>
+              </h3>
+              <p style="font-size: 0.85rem; color: var(--tp-text-secondary); margin: 0 0 0.85rem;">
+                {alt.tagline}
+              </p>
+              <div style="font-size: 0.82rem; background: var(--tp-bg-alt); padding: 0.6rem 0.8rem; border-radius: 8px; margin-bottom: 0.9rem;">
+                口令：<strong>{alt.couponLabel}</strong> · 最低每GB：<strong>¥{alt.bestValueCostPerGB.toFixed(3)}/GB</strong>
+              </div>
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+              <a href={`/reviews/${alt.id}/`} class="tp-btn tp-btn-outline" style="flex: 1;">
+                对比 {alt.name} 评测
+              </a>
+              <button
+                type="button"
+                class="tp-btn tp-btn-violet"
+                data-copy-code={alt.couponCode || ''}
+                data-brand-name={alt.name}
+                data-aff-url={alt.affUrl}
+              >
+                去官网 &nearr;
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 4. RELATED GUIDES -->
+    {relatedGuides.length > 0 && (
+      <section style="margin-bottom: 3rem;">
+        <h2 style="font-size: 1.4rem; font-weight: 900; margin: 0 0 1rem;">
+          三、 包含「{brand.name}」的编辑横评与省钱攻略
+        </h2>
+        <div class="tp-grid-2">
+          {relatedGuides.map((g) => (
+            <article class="tp-bento-card">
+              <span class="tp-badge tp-badge-gold" style="margin-bottom: 0.5rem;">{g.data.category}</span>
+              <h3 style="margin: 0 0 0.5rem; font-size: 1.08rem; font-weight: 800;">
+                <a href={`/guides/${g.slug}/`} style="color: var(--tp-text);">{g.data.title}</a>
+              </h3>
+              <p style="margin: 0 0 0.75rem; font-size: 0.86rem; color: var(--tp-text-secondary);">
+                {g.data.buyerVerdict}
+              </p>
+              <a href={`/guides/${g.slug}/`} style="font-size: 0.84rem; font-weight: 700;">阅读完整横评报告 &rarr;</a>
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- 5. BRAND SPECIFIC FAQ -->
+    <section style="max-width: 920px;">
+      <h2 style="font-size: 1.4rem; font-weight: 900; margin: 0 0 1rem;">
+        ❓ 关于 {brand.name} 的常见购买问题 (FAQ)
+      </h2>
+      <div style="display: flex; flex-direction: column; gap: 0.9rem;">
+        {extraFaqs.map((faq) => (
+          <div class="tp-bento-card" style="padding: 1.15rem 1.4rem;">
+            <h3 style="margin: 0 0 0.4rem; font-size: 1rem; font-weight: 800; color: var(--tp-violet);">Q：{faq.q}</h3>
+            <p style="margin: 0; font-size: 0.92rem; color: var(--tp-text-secondary);">{faq.a}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>
+
+  <style>
+    @media (max-width: 860px) {
+      .review-hero-grid,
+      .review-verdict-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+  </style>
+</BaseLayout>

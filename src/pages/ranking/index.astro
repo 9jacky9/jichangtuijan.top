@@ -1,0 +1,519 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import {
+  rankingFlagshipList,
+  rankingCouponValueList,
+  rankingUnder100AnnualList,
+  rankingPayAsYouGoList,
+  rankingHeavyStudioList,
+} from '../../data/brands';
+
+const rankingFaqs = [
+  {
+    "q": "优惠码是否适用于全部套餐？",
+    "a": "不一定。大佬云dly88和闪电鼠sd88仅限月付；首单、年包排除与充值优惠请查看口令总表的逐项说明。没有注明折扣的口令不推算优惠幅度。"
+  },
+  {
+    "q": "排序代表真实用户评价吗？",
+    "a": "不是。默认顺序是资料展示顺序，不是投票结果或性能保证。可以按价格、周期与流量自行筛选，实际服务表现需要在自己的网络验证。"
+  },
+  {
+    "q": "月均价与每GB价格如何理解？",
+    "a": "年付月均价是全年付款除以十二，并非可按月支付。每GB为资料计算值，取决于周期、额度与计费条件；未使用额度和支付费用可能改变实际成本。"
+  },
+  {
+    "q": "购买前应该确认哪些信息？",
+    "a": "确认套餐原价、优惠资格、最终金额、额度重置、设备限制和售后条款。平台访问条件与账号权限以平台官方说明为准。"
+  }
+];
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: '首页', item: 'https://jichangtuijan.top/' },
+    { '@type': 'ListItem', position: 2, name: '2026 多维度机场排行榜中心', item: 'https://jichangtuijan.top/ranking/' },
+  ],
+};
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: rankingFaqs.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
+---
+
+<BaseLayout
+  title="机场排行榜 2026：五大分类榜单｜机场推荐"
+  description="2026 机场五大分类榜单：综合旗舰、口令折后性价比、百元内年付、一次性流量包、大流量多设备。榜单按套餐资料排序，不是用户评分，价格以结算页为准。"
+  canonicalPath="/ranking/"
+  jsonLd={[breadcrumbSchema, faqSchema]}
+>
+  <section style="padding: 2.5rem 0 1.75rem; background: var(--tp-bg-alt); border-bottom: 1px solid var(--tp-border);">
+    <div class="tp-container">
+      <nav aria-label="面包屑" style="font-size: 0.84rem; color: var(--tp-text-muted); margin-bottom: 0.85rem;">
+        <a href="/">首页</a> &rsaquo; <span>2026 多维度机场排行榜中心</span>
+      </nav>
+      <span class="tp-badge tp-badge-violet">🏆 五大细分场景参考天梯 · 真实折后价排序</span>
+      <h1 style="font-size: clamp(1.75rem, 3.2vw, 2.5rem); font-weight: 900; margin: 0.6rem 0 0.75rem;">
+        2026 多维度专线机场排行榜中心
+      </h1>
+      <p style="color: var(--tp-text-secondary); max-width: 820px; margin: 0 0 1.5rem; font-size: 1rem;">
+        不同人群的“最佳机场”截然不同：学生党看重 <strong>百元内包年总价</strong>，月付主力党看重 <strong>7折券后百G单价</strong>，低频用户需要 <strong>有效期需核对的一次性流量包</strong>，而家庭软路由与工作室则需要 <strong>500GB~1.5TB 巨量池</strong>。点击下方标签一键直达对应天梯榜：
+      </p>
+
+      <!-- Tab Navigation -->
+      <div style="display: flex; flex-wrap: wrap; gap: 0.6rem;" id="rankingTabButtons">
+        <a href="#tab-flagship" data-tab="all" class="tp-btn tp-btn-violet ranking-tab-btn">
+          🌟 显示全部五大榜单
+        </a>
+        <a href="#tab-flagship" data-tab="tab-flagship" class="tp-btn tp-btn-outline ranking-tab-btn">
+          1. 综合旗舰主力榜 ({rankingFlagshipList.length}家)
+        </a>
+        <a href="#tab-coupon" data-tab="tab-coupon" class="tp-btn tp-btn-outline ranking-tab-btn">
+          2. 7折/8折优惠码性价比榜 ({rankingCouponValueList.length}家)
+        </a>
+        <a href="#tab-annual" data-tab="tab-annual" class="tp-btn tp-btn-outline ranking-tab-btn">
+          3. 百元内年付学生/备用榜 ({rankingUnder100AnnualList.length}家)
+        </a>
+        <a href="#tab-payg" data-tab="tab-payg" class="tp-btn tp-btn-outline ranking-tab-btn">
+          4. 一次性不限时流量包榜 ({rankingPayAsYouGoList.length}家)
+        </a>
+        <a href="#tab-heavy" data-tab="tab-heavy" class="tp-btn tp-btn-outline ranking-tab-btn">
+          5. 大流量家庭与工作室榜 ({rankingHeavyStudioList.length}家)
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div class="tp-container" style="padding-top: 2rem; padding-bottom: 2rem;">
+    <!-- RANKING 1: 综合旗舰主力榜 -->
+    <section id="tab-flagship" class="ranking-panel" style="margin-bottom: 3.5rem;">
+      <div class="tp-section-head">
+        <div>
+          <span class="tp-badge tp-badge-gold">榜单 01 · 按需求比较主力梯队</span>
+          <h2 class="tp-section-title">👑 2026 综合旗舰主力榜（IPLC/IEPL 专线标杆）</h2>
+          <p class="tp-section-desc">
+            入选标准：全节点 1.0x 倍率、高冗余港台日新美专线集群、大部分具备历史实测档案记录，适合作为全年 365 天不断流的第一主力机场。
+          </p>
+        </div>
+      </div>
+
+      <div class="tp-table-wrap">
+        <table class="tp-table">
+          <thead>
+            <tr>
+              <th>排名</th>
+              <th>品牌名称</th>
+              <th>专线架构 / 峰值</th>
+              <th>年付特惠包</th>
+              <th>主力月付档（折后）</th>
+              <th>专属优惠码 / 周期折扣</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rankingFlagshipList.map((b, i) => (
+              <tr>
+                <td>
+                  <span style="font-weight: 900; color: var(--tp-violet);">TOP {i + 1}</span>
+                </td>
+                <td>
+                  <a href={`/reviews/${b.id}/`} style="font-weight: 800; font-size: 1rem; color: var(--tp-text);">
+                    {b.name}
+                  </a>
+                  {b.hasRealSpeedRecord && (
+                    <span class="tp-badge tp-badge-emerald" style="margin-left: 0.4rem;">历史资料参考</span>
+                  )}
+                </td>
+                <td>
+                  <strong>{b.lineType}</strong>
+                  <div style="font-size: 0.78rem; color: var(--tp-text-muted);">{b.peakBandwidth} · {b.protocol}</div>
+                </td>
+                <td>
+                  {b.lowestAnnualPrice ? `¥${b.lowestAnnualPrice}/年 (合¥${b.lowestAnnualMonthlyEq}/月)` : '主推月付/年付168'}
+                </td>
+                <td>
+                  <strong style="color: var(--tp-rose); font-size: 1rem;">¥{b.lowestMonthlyDiscounted}/月</strong>
+                  <span style="font-size: 0.8rem; color: var(--tp-text-muted);"> ({b.lowestMonthlyTrafficGB}GB)</span>
+                </td>
+                <td>
+                  <span class="tp-badge tp-badge-violet">{b.couponLabel}</span>
+                </td>
+                <td>
+                  <div style="display: flex; gap: 0.4rem;">
+                    <button
+                      type="button"
+                      class="tp-btn tp-btn-rose"
+                      style="padding: 0.4rem 0.75rem; font-size: 0.8rem;"
+                      data-copy-code={b.couponCode || ''}
+                      data-brand-name={b.name}
+                      data-aff-url={b.affUrl}
+                    >
+                      {b.couponCode ? `复制 ${b.couponCode}` : '去官网'} &nearr;
+                    </button>
+                    <a href={`/reviews/${b.id}/`} class="tp-btn tp-btn-outline" style="padding: 0.4rem 0.65rem; font-size: 0.8rem;">
+                      评测
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- RANKING 2: 7折/8折优惠码折后性价比榜 -->
+    <section id="tab-coupon" class="ranking-panel" style="margin-bottom: 3.5rem;">
+      <div class="tp-section-head">
+        <div>
+          <span class="tp-badge tp-badge-rose">榜单 02 · 按折后首月真实价格从低到高排序</span>
+          <h2 class="tp-section-title">7折/8折口令折后性价比榜（月付低至 ¥8.40 起）</h2>
+          <p class="tp-section-desc">按自己的预算、周期和流量比较套餐。优惠条件已按2026年11月1日提供的资料核对；未注明的折扣不作推算，页面参考金额不代替实际订单。</p>
+        </div>
+        <a href="/coupons/" class="tp-btn tp-btn-rose">查看口令总表 &rarr;</a>
+      </div>
+
+      <div class="tp-table-wrap">
+        <table class="tp-table">
+          <thead>
+            <tr>
+              <th>折后排名</th>
+              <th>品牌名称</th>
+              <th>优惠码 & 折扣力度</th>
+              <th>主推月付套餐 (流量)</th>
+              <th>原价 vs 折后实付</th>
+              <th>每GB折算单价</th>
+              <th>前往官网购买</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rankingCouponValueList.map((b, i) => {
+              const mainMonthly = b.plans.find((p) => p.cycle === '月付' && p.couponApplicable) || b.plans.find((p) => p.cycle === '月付')!;
+              return (
+                <tr>
+                  <td>
+                    <span class="tp-badge tp-badge-rose">#{i + 1}</span>
+                  </td>
+                  <td>
+                    <a href={`/reviews/${b.id}/`} style="font-weight: 800; color: var(--tp-text);">{b.name}</a>
+                    <div style="font-size: 0.76rem; color: var(--tp-text-muted);">{b.lineType}</div>
+                  </td>
+                  <td>
+                    <code style="background: var(--tp-rose-light); color: var(--tp-rose); padding: 0.2rem 0.5rem; border-radius: 6px; font-weight: 900;">
+                      {b.couponCode}
+                    </code>
+                    <span style="font-size: 0.8rem; margin-left: 0.35rem; font-weight: 700;">
+                      ({b.discountRate === 0.7 ? '7折优惠码' : b.discountRate === 0.8 ? '8折特惠' : b.discountRate === 0.85 ? '85折' : b.discountRate === 0.9 ? '9折' : '以结算为准'})
+                    </span>
+                  </td>
+                  <td>
+                    <strong>{mainMonthly.name}</strong> ({mainMonthly.trafficGB}GB/月)
+                  </td>
+                  <td>
+                    <del style="color: var(--tp-text-muted); font-size: 0.82rem;">¥{mainMonthly.originalPrice}</del>
+                    <strong style="color: var(--tp-rose); font-size: 1.05rem; margin-left: 0.4rem;">
+                      ¥{mainMonthly.discountedPrice.toFixed(2)}/月
+                    </strong>
+                  </td>
+                  <td>
+                    <span style="color: var(--tp-emerald); font-weight: 800;">¥{mainMonthly.costPerGB.toFixed(3)}/GB</span>
+                  </td>
+                  <td>
+                    <button
+                      type="button"
+                      class="tp-btn tp-btn-rose"
+                      style="padding: 0.4rem 0.8rem; font-size: 0.8rem;"
+                      data-copy-code={b.couponCode}
+                      data-brand-name={b.name}
+                      data-aff-url={b.affUrl}
+                    >
+                      复制「{b.couponCode}」去官网 &nearr;
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- RANKING 3: 百元内年付小包学生/备用榜 -->
+    <section id="tab-annual" class="ranking-panel" style="margin-bottom: 3.5rem;">
+      <div class="tp-section-head">
+        <div>
+          <span class="tp-badge tp-badge-violet">榜单 03 · 实付年费 &le;100元</span>
+          <h2 class="tp-section-title">🎓 百元内年付小包学生 / 备用保活榜（共 {rankingUnder100AnnualList.length} 家）</h2>
+          <p class="tp-section-desc">
+            一杯奶茶钱管一整年！全部为全年实付低于 100 元的 IPLC/IEPL/BGP 专线年卡（按年费从低到高排序），月均仅需 <strong>¥5.60 ~ ¥8.25/月</strong>。
+          </p>
+        </div>
+        <a href="/guides/under-100-yuan-annual-airport-plan-ranking-2026/" class="tp-btn tp-btn-outline">
+          阅读《百元内年付套餐精算对比》&rarr;
+        </a>
+      </div>
+
+      <div class="tp-table-wrap">
+        <table class="tp-table">
+          <thead>
+            <tr>
+              <th>年费排名</th>
+              <th>品牌名称</th>
+              <th>年付套餐名称</th>
+              <th>全年实付总价</th>
+              <th>折合月均成本</th>
+              <th>每月刷新流量</th>
+              <th>线路规格</th>
+              <th>直达购买</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rankingUnder100AnnualList.map((b, i) => {
+              const annualPlan = b.plans.find((p) => p.cycle === '年付')!;
+              return (
+                <tr>
+                  <td>
+                    <span style="font-weight: 800; color: var(--tp-violet);">#{i + 1}</span>
+                  </td>
+                  <td>
+                    <a href={`/reviews/${b.id}/`} style="font-weight: 800; color: var(--tp-text);">{b.name}</a>
+                  </td>
+                  <td>
+                    {annualPlan.name}
+                    {annualPlan.couponApplicable && b.couponCode && (
+                      <span class="tp-badge tp-badge-rose" style="margin-left: 0.35rem;">需用码 {b.couponCode}</span>
+                    )}
+                  </td>
+                  <td>
+                    <strong style="color: var(--tp-rose); font-size: 1.05rem;">¥{annualPlan.discountedPrice.toFixed(1)}/年</strong>
+                  </td>
+                  <td>
+                    <strong style="color: var(--tp-emerald);">¥{annualPlan.monthlyEquivalent.toFixed(2)}/月</strong>
+                  </td>
+                  <td>
+                    <strong>{annualPlan.trafficGB} GB/月</strong> (1.0x)
+                  </td>
+                  <td>
+                    {b.lineType} · {b.peakBandwidth}
+                  </td>
+                  <td>
+                    <button
+                      type="button"
+                      class="tp-btn tp-btn-violet"
+                      style="padding: 0.4rem 0.75rem; font-size: 0.8rem;"
+                      data-copy-code={annualPlan.couponApplicable ? b.couponCode || '' : ''}
+                      data-brand-name={b.name}
+                      data-aff-url={b.affUrl}
+                    >
+                      直达抢购 &nearr;
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- RANKING 4: 一次性不限时流量包榜 -->
+    <section id="tab-payg" class="ranking-panel" style="margin-bottom: 3.5rem;">
+      <div class="tp-section-head">
+        <div>
+          <span class="tp-badge tp-badge-emerald">榜单 04 · 流量有效期以条款为准 · 重置规则需核对</span>
+          <h2 class="tp-section-title">♾️ 一次性买断「不限时流量包」榜单</h2>
+          <p class="tp-section-desc">
+            平时使用频率不高、或者想在主力月付机场之外配一张“有效期需核对的第二备用梯”？这 3 家品牌提供真正的一次性买断有效期以条款为准流量包：
+          </p>
+        </div>
+        <a href="/guides/one-time-pay-as-you-go-traffic-pack-comparison/" class="tp-btn tp-btn-outline">
+          阅读《不限时流量包横评与算账》&rarr;
+        </a>
+      </div>
+
+      <div class="tp-grid-3">
+        {rankingPayAsYouGoList.map((b) => {
+          const paygPlans = b.plans.filter((p) => p.cycle === '一次性');
+          return (
+            <article class="tp-bento-card" style="border-top: 4px solid var(--tp-emerald); display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+                  <span class="tp-badge tp-badge-emerald">有效期以条款为准 · 用完为止</span>
+                  <span class="tp-badge tp-badge-violet">{b.lineType}</span>
+                </div>
+                <h3 style="font-size: 1.35rem; font-weight: 900; margin: 0 0 0.4rem;">
+                  <a href={`/reviews/${b.id}/`} style="color: var(--tp-text);">{b.name}</a>
+                </h3>
+                <p style="font-size: 0.86rem; color: var(--tp-text-secondary); margin: 0 0 1rem;">
+                  {b.tagline}
+                </p>
+
+                <div style="background: var(--tp-bg-alt); border-radius: 10px; padding: 0.85rem; margin-bottom: 1rem;">
+                  <div style="font-weight: 800; font-size: 0.84rem; margin-bottom: 0.5rem; color: var(--tp-violet);">
+                    📦 可选一次性不限时流量包档位：
+                  </div>
+                  {paygPlans.map((p) => (
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.4rem 0; border-bottom: 1px dashed var(--tp-border); font-size: 0.88rem;">
+                      <span><strong>{p.name}</strong> ({p.trafficGB}GB 总量)</span>
+                      <span style="font-weight: 900; color: var(--tp-rose);">
+                        ¥{p.originalPrice}/一次性
+                      </span>
+                    </div>
+                  ))}
+                  {b.couponCode && (
+                    <div style="margin-top: 0.55rem; font-size: 0.8rem; color: var(--tp-emerald); font-weight: 700;">
+                      💡 结算可试填优惠码：<code>{b.couponCode}</code>（{b.couponLabel}）
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 0.5rem;">
+                <button
+                  type="button"
+                  class="tp-btn tp-btn-violet"
+                  style="flex: 1;"
+                  data-copy-code={b.couponCode || ''}
+                  data-brand-name={b.name}
+                  data-aff-url={b.affUrl}
+                >
+                  {b.couponCode ? `复制 ${b.couponCode} 买不限时包` : '前往官网购买不限时包'} &nearr;
+                </button>
+                <a href={`/reviews/${b.id}/`} class="tp-btn tp-btn-outline">评测</a>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- RANKING 5: 大流量/多设备家庭与工作室榜 -->
+    <section id="tab-heavy" class="ranking-panel" style="margin-bottom: 3rem;">
+      <div class="tp-section-head">
+        <div>
+          <span class="tp-badge tp-badge-gold">榜单 05 · 350GB ~ 1.5TB 超大流量池 + 不限设备数</span>
+          <h2 class="tp-section-title">🚀 大流量 / 多设备家庭软路由与工作室榜</h2>
+          <p class="tp-section-desc">
+            专为全屋 OpenWrt/Apple TV 共享、4K/8K 原盘秒开、AI 大模型高频拉取及跨境工作室打造。所有上榜品牌均<strong>不限制同时在线设备数</strong>，大包折算单价低至 <strong>¥0.069 ~ ¥0.095/GB</strong>！
+          </p>
+        </div>
+        <a href="/guides/heavy-downloader-500gb-1tb-large-traffic-plan-ranking/" class="tp-btn tp-btn-outline">
+          阅读《500G~1.5TB大流量单价排行》&rarr;
+        </a>
+      </div>
+
+      <div class="tp-table-wrap">
+        <table class="tp-table">
+          <thead>
+            <tr>
+              <th>品牌名称</th>
+              <th>最大流量档位</th>
+              <th>大包月付实付价</th>
+              <th>每GB折算单价</th>
+              <th>设备限制 & 峰值</th>
+              <th>优惠口令 / 备注</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rankingHeavyStudioList.map((b) => {
+              const heavyPlan = [...b.plans]
+                .filter((p) => p.cycle === '月付')
+                .sort((a, c) => c.trafficGB - a.trafficGB)[0];
+              return (
+                <tr>
+                  <td>
+                    <a href={`/reviews/${b.id}/`} style="font-weight: 800; color: var(--tp-text);">{b.name}</a>
+                  </td>
+                  <td>
+                    <strong style="color: var(--tp-violet); font-size: 1rem;">
+                      {heavyPlan.trafficGB >= 1000 ? `${(heavyPlan.trafficGB / 1000).toFixed(1)} TB/月 (${heavyPlan.trafficGB}GB)` : `${heavyPlan.trafficGB} GB/月`}
+                    </strong>
+                    <div style="font-size: 0.76rem; color: var(--tp-text-muted);">{heavyPlan.name}</div>
+                  </td>
+                  <td>
+                    <strong style="color: var(--tp-rose); font-size: 1rem;">¥{heavyPlan.discountedPrice.toFixed(2)}/月</strong>
+                    {heavyPlan.originalPrice !== heavyPlan.discountedPrice && (
+                      <del style="font-size: 0.8rem; color: var(--tp-text-muted); margin-left: 0.3rem;">¥{heavyPlan.originalPrice}</del>
+                    )}
+                  </td>
+                  <td>
+                    <span class="tp-badge tp-badge-emerald">¥{heavyPlan.costPerGB.toFixed(3)}/GB</span>
+                  </td>
+                  <td>
+                    <strong>{b.deviceLimit}</strong>
+                    <div style="font-size: 0.76rem; color: var(--tp-text-muted);">{b.lineType} · {b.peakBandwidth}</div>
+                  </td>
+                  <td>
+                    <span style="font-size: 0.82rem; font-weight: 700; color: var(--tp-violet);">{b.couponLabel}</span>
+                  </td>
+                  <td>
+                    <button
+                      type="button"
+                      class="tp-btn tp-btn-violet"
+                      style="padding: 0.4rem 0.75rem; font-size: 0.8rem;"
+                      data-copy-code={b.couponCode || ''}
+                      data-brand-name={b.name}
+                      data-aff-url={b.affUrl}
+                    >
+                      {b.couponCode ? `复制 ${b.couponCode}` : '去官网'} &nearr;
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section style="max-width: 920px; margin: 3rem auto 0;">
+      <h2 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 1rem;">❓ 排行榜选机常见问题</h2>
+      <div style="display: flex; flex-direction: column; gap: 0.9rem;">
+        {rankingFaqs.map((faq) => (
+          <div class="tp-bento-card" style="padding: 1.15rem 1.4rem;">
+            <h3 style="margin: 0 0 0.4rem; font-size: 1rem; font-weight: 800; color: var(--tp-violet);">Q：{faq.q}</h3>
+            <p style="margin: 0; font-size: 0.92rem; color: var(--tp-text-secondary);">{faq.a}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  </div>
+
+  <script is:inline>
+    (function () {
+      var btns = Array.prototype.slice.call(document.querySelectorAll('.ranking-tab-btn'));
+      var panels = Array.prototype.slice.call(document.querySelectorAll('.ranking-panel'));
+
+      btns.forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+          var targetTab = btn.getAttribute('data-tab');
+          if (!targetTab) return;
+          e.preventDefault();
+
+          btns.forEach(function (b) {
+            b.classList.remove('tp-btn-violet');
+            b.classList.add('tp-btn-outline');
+          });
+          btn.classList.remove('tp-btn-outline');
+          btn.classList.add('tp-btn-violet');
+
+          panels.forEach(function (p) {
+            if (targetTab === 'all' || p.id === targetTab) {
+              p.style.display = 'block';
+            } else {
+              p.style.display = 'none';
+            }
+          });
+        });
+      });
+    })();
+  </script>
+</BaseLayout>

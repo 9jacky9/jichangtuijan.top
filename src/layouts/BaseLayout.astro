@@ -1,0 +1,296 @@
+---
+import '../styles/global.css';
+
+export interface Props {
+  title: string;
+  description: string;
+  keywords?: string;
+  canonicalPath?: string;
+  ogType?: 'website' | 'article';
+  jsonLd?: Record<string, any> | Array<Record<string, any>>;
+}
+
+const {
+  title,
+  description,
+  keywords = '机场推荐,2026机场推荐,靠谱机场,机场是什么,机场价格,机场优惠码,IPLC专线机场,IEPL机场推荐,便宜年付机场,不限时流量包机场,暮光网络,飞猫云,微风网络,大佬云',
+  canonicalPath = Astro.url.pathname,
+  ogType = 'website',
+  jsonLd,
+} = Astro.props;
+
+const siteOrigin = 'https://jichangtuijan.top';
+const normalizedPath = canonicalPath.endsWith('/') ? canonicalPath : `${canonicalPath}/`;
+const canonicalUrl = new URL(normalizedPath, siteOrigin).toString();
+
+const currentPath = Astro.url.pathname;
+
+const defaultWebSiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': `${siteOrigin}/#website`,
+  name: '机场推荐',
+  alternateName: ['机场推荐', 'TopPick 机场推荐选购指南'],
+  url: siteOrigin,
+  inLanguage: 'zh-CN',
+  publisher: { '@id': `${siteOrigin}/#organization` },
+  description: '机场推荐：整理 34 家机场的套餐价格、线路标注、优惠码适用条件与每 GB 折算单价，并提供新手入门、选购清单、客户端导入与自测方法。',
+};
+
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': `${siteOrigin}/#organization`,
+  name: '机场推荐',
+  url: siteOrigin,
+  logo: `${siteOrigin}/favicon.svg`,
+};
+
+const baseSchemas = [defaultWebSiteSchema, organizationSchema];
+
+const schemaArray = Array.isArray(jsonLd)
+  ? [...baseSchemas, ...jsonLd]
+  : jsonLd
+  ? [...baseSchemas, jsonLd]
+  : baseSchemas;
+---
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+    <meta name="author" content="机场推荐" />
+    <meta name="theme-color" content="#5B21B6" />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="application/rss+xml" title="机场推荐 · TopPick 选购指南 RSS" href="/rss.xml" />
+
+    <!-- OpenGraph -->
+    <meta property="og:image" content="https://jichangtuijan.top/og-preview.png" />
+    <meta name="twitter:image" content="https://jichangtuijan.top/og-preview.png" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content="机场推荐 · TopPick 选购指南" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    <!-- JSON-LD Structured Data -->
+    {schemaArray.map((item) => (
+      <script type="application/ld+json" set:html={JSON.stringify(item)} />
+    ))}
+
+    <script is:inline>
+      (function () {
+        try {
+          var saved = localStorage.getItem('tp-theme');
+          if (saved === 'dark' || saved === 'light') {
+            document.documentElement.setAttribute('data-theme', saved);
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div class="tp-announce-bar">
+      <span>2026 年 11 月资料更新：收录 34 家机场的价格与口令条件，核对日 2026-11-01，以结算页为准</span>
+      <a href="/coupons/">查看口令条件 &rarr;</a>
+    </div>
+
+    <header class="tp-header">
+      <div class="tp-container tp-header-inner">
+        <a href="/" class="tp-logo" aria-label="机场推荐 · TopPick 选购指南 首页">
+          <span class="tp-logo-mark">TP</span>
+          <span>
+            机场推荐
+            <span class="tp-logo-sub">TopPick Guide · 2026</span>
+          </span>
+        </a>
+
+        <nav class="tp-nav" aria-label="主导航">
+          <a href="/" class={`tp-nav-link ${currentPath === '/' ? 'active' : ''}`}>总榜</a>
+          <a href="/ranking/" class={`tp-nav-link ${currentPath.startsWith('/ranking') ? 'active' : ''}`}>5大分类排行榜</a>
+          <a href="/coupons/" class={`tp-nav-link tp-nav-link-hot ${currentPath.startsWith('/coupons') ? 'active' : ''}`}>口令总表</a>
+          <a href="/compare/" class={`tp-nav-link ${currentPath.startsWith('/compare') ? 'active' : ''}`}>34家每GB比价表</a>
+          <a href="/guides/" class={`tp-nav-link ${currentPath.startsWith('/guides') ? 'active' : ''}`}>省钱攻略</a>
+          <a href="/about/" class={`tp-nav-link ${currentPath.startsWith('/about') ? 'active' : ''}`}>评测标准</a>
+        </nav>
+
+        <div class="tp-header-actions">
+          <button type="button" id="tpThemeToggle" class="tp-theme-btn" aria-label="切换深浅色主题">
+            <span id="tpThemeIcon">🌙</span>
+            <span id="tpThemeText">夜间模式</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="tp-container" style="font-size:.82rem;color:var(--tp-text-muted);padding-top:1rem;padding-bottom:1rem">本站含推广链接，购买可能产生佣金。套餐价格为资料参考，优惠口令核对日期为2026-11-01；平台可用性和结算金额需自行确认。默认排序不是用户评分。</div>
+<slot />
+    </main>
+
+    <!-- Global Coupon Copy Toast -->
+    <div id="tpCouponToast" class="tp-toast" role="status" aria-live="polite">
+      <div style="font-weight: 800; font-size: 0.96rem; margin-bottom: 0.25rem; color: #FBBF24;" id="tpToastTitle">
+        ✅ 已复制专属优惠码
+      </div>
+      <div style="font-size: 0.85rem; color: #E2E8F0;" id="tpToastBody">
+        请在结算页输入口令，是否生效以结算页为准。正在打开官方网站...
+      </div>
+    </div>
+
+    <footer class="tp-footer">
+      <div class="tp-container">
+        <div class="tp-footer-grid">
+          <div>
+            <div class="tp-logo" style="margin-bottom: 0.75rem;">
+              <span class="tp-logo-mark">TP</span>
+              <span>
+                机场推荐 · TopPick 选购指南
+                <span class="tp-logo-sub">https://jichangtuijan.top</span>
+              </span>
+            </div>
+            <p style="margin: 0 0 0.9rem; max-width: 440px; line-height: 1.65;">
+              专注全球中文圈用户的独立消费级专线比价指南。我们坚持<strong>不虚构延迟跑分、不推荐暗扣倍率节点、帮用户精算折后每 GB 真实单价</strong>，收录全部 34 家主流 IPLC / IEPL / BGP 专线品牌。
+            </p>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <span class="tp-badge tp-badge-violet">34家全量收录</span>
+              <span class="tp-badge tp-badge-rose">口令附适用条件</span>
+              <span class="tp-badge tp-badge-gold">计费规则需核对</span>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="tp-footer-title">核心导购栏目</h3>
+            <ul class="tp-footer-links">
+              <li><a href="/">2026 机场推荐总榜</a></li>
+              <li><a href="/ranking/">五大维度排行榜中心</a></li>
+              <li><a href="/coupons/">机场口令总表</a></li>
+              <li><a href="/compare/">34家每GB单价横向对比表</a></li>
+              <li><a href="/guides/">精算与防坑专栏</a></li>
+              <li><a href="/faq/">机场常见问题 FAQ</a></li>
+            </ul>
+            <h3 class="tp-footer-title" style="margin-top: 1.25rem;">新手必读</h3>
+            <ul class="tp-footer-links">
+              <li><a href="/guides/what-is-jichang-beginner-guide-2026/">机场是什么？新手入门</a></li>
+              <li><a href="/guides/how-to-choose-reliable-airport-12-point-checklist/">靠谱机场 12 项核对清单</a></li>
+              <li><a href="/guides/jichang-price-cheat-sheet-2026-11/">机场价格速查表</a></li>
+              <li><a href="/guides/clash-verge-rev-import-subscription-tutorial/">导入订阅教程</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="tp-footer-title">热门品牌直达评测</h3>
+            <ul class="tp-footer-links">
+              <li><a href="/reviews/twilight/">暮光网络评测与比价</a></li>
+              <li><a href="/reviews/flycat/">飞猫云评测与比价</a></li>
+              <li><a href="/reviews/breezenet/">微风网络评测与比价</a></li>
+              <li><a href="/reviews/dalaoyun/">大佬云评测与比价（口令 dly88）</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="tp-footer-title">站点合规与索引</h3>
+            <ul class="tp-footer-links">
+              <li><a href="/about/">关于我们与评测标准</a></li>
+              <li><a href="/privacy/">隐私保护政策</a></li>
+              <li><a href="/terms/">服务条款与免责声明</a></li>
+              <li><a href="/sitemap/">全站 HTML サイト地图</a></li>
+              <li><a href="/rss.xml">RSS 订阅源</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div style="border-top: 1px solid var(--tp-border); padding-top: 1.5rem; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; font-size: 0.82rem; color: var(--tp-text-muted);">
+          <div>
+            &copy; 2026 机场推荐 · TopPick 选购指南 (jichangtuijan.top). 保留所有原创评测与精算比价权利。
+          </div>
+          <div>
+            合规声明：本站仅提供客观网络参数对比与套餐价格精算，请遵守所在地法律法规，仅用于跨境办公、学术检索与合规流媒体娱乐。
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script is:inline>
+      (function () {
+        var btn = document.getElementById('tpThemeToggle');
+        var icon = document.getElementById('tpThemeIcon');
+        var text = document.getElementById('tpThemeText');
+
+        function syncThemeUI() {
+          var current = document.documentElement.getAttribute('data-theme') || 'light';
+          if (icon && text) {
+            if (current === 'dark') {
+              icon.textContent = '☀️';
+              text.textContent = '珍珠浅色';
+            } else {
+              icon.textContent = '🌙';
+              text.textContent = '夜间模式';
+            }
+          }
+        }
+        syncThemeUI();
+
+        if (btn) {
+          btn.addEventListener('click', function () {
+            var current = document.documentElement.getAttribute('data-theme') || 'light';
+            var next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            try {
+              localStorage.setItem('tp-theme', next);
+            } catch (e) {}
+            syncThemeUI();
+          });
+        }
+
+        // Global handler for copy coupon buttons
+        var toast = document.getElementById('tpCouponToast');
+        var toastTitle = document.getElementById('tpToastTitle');
+        var toastBody = document.getElementById('tpToastBody');
+        var toastTimer = null;
+
+        document.addEventListener('click', function (e) {
+          var target = e.target.closest('[data-copy-code]');
+          if (!target) return;
+          var code = target.getAttribute('data-copy-code');
+          var brand = target.getAttribute('data-brand-name') || '该品牌';
+          var affUrl = target.getAttribute('data-aff-url');
+
+          if (code && navigator.clipboard) {
+            navigator.clipboard.writeText(code).catch(function () {});
+          }
+
+          if (toast && toastTitle && toastBody) {
+            toastTitle.textContent = code
+              ? '✅ 已复制 ' + brand + ' 优惠码：' + code
+              : '✅ 已激活 ' + brand + ' 周期自动折扣通道';
+            toastBody.textContent = affUrl
+              ? '正在新窗口打开 ' + brand + ' 官方网站，请在结算页输入口令，是否生效以结算页为准。'
+              : '已复制优惠口令到剪贴板，请在购买结算页粘贴使用。';
+            toast.classList.add('show');
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(function () {
+              toast.classList.remove('show');
+            }, 4200);
+          }
+
+          if (affUrl) {
+            window.open(affUrl, '_blank', 'noopener,noreferrer');
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

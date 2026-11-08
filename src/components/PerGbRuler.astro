@@ -1,0 +1,36 @@
+---
+import { allBrands } from '../data/brands';
+import Monogram from './Monogram.astro';
+
+// 把 34 家按“入门月付档的每 GB 标价”摆在一把尺子上：越靠左越便宜。
+// 头像按“蜂群”方式分层摆放，避免互相遮住。
+const items = allBrands.map((b) => ({ b, v: b.lowestMonthlyOriginal / b.lowestMonthlyTrafficGB })).sort((a, b) => a.v - b.v);
+const min = items[0].v;
+const max = items[items.length - 1].v;
+const pos = (v: number) => 3 + ((v - min) / (max - min)) * 94;
+const labeled = new Set([allBrands[0].id, allBrands[1].id, allBrands[2].id, allBrands[3].id, items[0].b.id, items[items.length - 1].b.id]);
+
+// 可用的层（单位 px，距容器顶部）：靠近尺子的先用
+const lanes = [64, 128, 34, 158, 4];
+const lastX: number[] = lanes.map(() => -100);
+const placed = items.map((i) => {
+  const x = pos(i.v);
+  const gap = labeled.has(i.b.id) ? 7.5 : 3.1;
+  let k = lanes.findIndex((_, idx) => x - lastX[idx] >= gap);
+  if (k < 0) k = lastX.indexOf(Math.min(...lastX));
+  lastX[k] = x;
+  return { ...i, x, top: lanes[k], below: lanes[k] > 100 };
+});
+const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => min + (max - min) * t);
+---
+
+<div class="tp-ruler" role="img" aria-label="34 家入门档每 GB 标价的分布尺">
+  <div class="rail"></div>
+  {ticks.map((t) => <span class="tick" style={`left:${pos(t)}%`}>¥{t.toFixed(3)}</span>)}
+  {placed.map((i) => (
+    <a href={`/reviews/${i.b.id}/`} class="dot" style={`left:${i.x}%;top:${i.top}px`} title={`${i.b.name}：约 ¥${i.v.toFixed(3)}/GB（月付起价 ¥${i.b.lowestMonthlyOriginal} / ${i.b.lowestMonthlyTrafficGB} GB）`}>
+      <Monogram name={i.b.name} id={i.b.id} size={labeled.has(i.b.id) ? 34 : 26} />
+      {labeled.has(i.b.id) && <span class="n">{i.b.name}</span>}
+    </a>
+  ))}
+</div>

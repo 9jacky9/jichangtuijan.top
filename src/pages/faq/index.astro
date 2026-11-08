@@ -1,0 +1,150 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const faqs = [
+  {
+    q: '机场是什么？',
+    a: '机场是对一类网络加速订阅服务的俗称：商家提供一批服务器节点，把节点信息打包成导入地址出售，用户把链接导入客户端后选择节点使用。购买的主要是流量额度、使用周期和节点范围。',
+    href: '/guides/what-is-jichang-beginner-guide-2026/',
+    link: '阅读新手入门',
+  },
+  {
+    q: '第一次买机场应该买月付还是年付？',
+    a: '建议先买月付小套餐试用。年付折扣再大，也是把风险提前预付，用了几个月发现不合适时，沉没成本可能比多交几个月月付还高。稳定使用一个月以上再考虑年付。',
+    href: '/guides/monthly-vs-annual-subscription-anti-runaway-strategy/',
+    link: '月付还是年付',
+  },
+  {
+    q: '怎么判断一家机场靠不靠谱？',
+    a: '没有办法保证任何商家长期稳定，能做的是降低风险：先买月付，核对退款条款、支持渠道、流量与设备限制、续费价格，不一次性预付过多。本站整理了 12 项下单前核对清单。',
+    href: '/guides/how-to-choose-reliable-airport-12-point-checklist/',
+    link: '12 项核对清单',
+  },
+  {
+    q: '机场多少钱一个月？',
+    a: '按本站资料整理，34 家品牌的最低月付档大致在每月十几元到三十元之间，流量额度从几十 GB 到几百 GB 不等。价格是资料参考，核对日期 2026-11-01，以结算页为准。',
+    href: '/guides/jichang-price-cheat-sheet-2026-11/',
+    link: '价格速查表',
+  },
+  {
+    q: '每 GB 流量单价怎么算？',
+    a: '用套餐实付价格除以每月流量。要比较不同周期的套餐，要先统一周期，再把优惠码和续费价考虑进去，不能直接拿年付月均价与月付价比较。',
+    href: '/guides/how-to-calculate-real-airport-cost-per-gb-2026/',
+    link: '每 GB 价格怎么算',
+  },
+  {
+    q: '倍率是什么意思？',
+    a: '倍率是使用节点时每传输 1GB 实际扣除的流量。倍率 2.0x 意味着传输 1GB 扣 2GB，一份 150GB 的套餐等效只有约 75GB。',
+    href: '/guides/airport-glossary-traffic-multiplier-reset-explained/',
+    link: '名词速查',
+  },
+  {
+    q: 'IPLC、IEPL、BGP 有什么区别？哪个更好？',
+    a: '它们是商家对线路类型的标注，在市场上常被混用。标签本身不构成速度承诺，实际表现取决于线路建设、你的宽带和使用时段，需要自己测试验证。',
+    href: '/guides/iepl-vs-iplc-vs-bgp-price-value-truth-2026/',
+    link: '线路标签怎么读',
+  },
+  {
+    q: '买完之后怎么在电脑上使用？',
+    a: '安装客户端，复制商家面板里的导入地址，在客户端的订阅页粘贴并导入，选择节点后打开系统代理。以 Clash Verge Rev 为例，本站有完整步骤和排错顺序。',
+    href: '/guides/clash-verge-rev-import-subscription-tutorial/',
+    link: '电脑端导入教程',
+  },
+  {
+    q: '手机用什么客户端？',
+    a: '客户端更新快，建议按标准选择：官方来源、支持商家订阅格式、最近仍在更新、规则分流支持和耗电表现。先看商家教程页推荐的客户端。',
+    href: '/guides/mobile-client-choice-for-subscription-import/',
+    link: '手机客户端选择',
+  },
+  {
+    q: '优惠码输入后没有折扣是为什么？',
+    a: '常见原因包括：套餐周期不适用、不是首单、口令用在了充值而不是购买、大小写或空格问题、活动已结束或次数用完。逐项排查后，以结算页显示的最终金额为准。',
+    href: '/guides/airport-coupon-code-not-working-troubleshooting/',
+    link: '优惠码排查',
+  },
+  {
+    q: '机场速度怎么测？',
+    a: '先测不使用代理的宽带基线，再在白天和晚上 8 点到 11 点的晚高峰各测延迟、下载速度和超时次数，连续测几天并记录。自己的记录比别人的跑分更有参考价值。',
+    href: '/guides/how-to-test-airport-speed-latency-packet-loss/',
+    link: '自测方法',
+  },
+  {
+    q: '机场和自建服务器、商业 VPN 怎么选？',
+    a: '不想折腾、需要多个地区节点选机场；有运维能力、要独享 IP 选自建；只要一键连接且用量小可以看商业 VPN。三者各有成本和风险，没有绝对优劣。',
+    href: '/guides/airport-vs-vps-vs-commercial-vpn-comparison/',
+    link: '三种方案对比',
+  },
+  {
+    q: '导入地址可以分享给别人吗？',
+    a: '不建议。导入地址带有你的账号标识，分享会占用你的流量，泄露后应在商家面板重置订阅。也不要把链接粘贴到来历不明的在线转换网站。',
+  },
+  {
+    q: '本站的价格和优惠码一定准确吗？',
+    a: '不保证。价格与优惠码来自本站整理的资料，核对日期为 2026-11-01，商家可能随时调整，最终以官网结算页为准。本站含推广链接，通过相关入口购买可能产生佣金。',
+    href: '/about/',
+    link: '评测标准与说明',
+  },
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
+
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: '首页', item: 'https://jichangtuijan.top/' },
+    { '@type': 'ListItem', position: 2, name: '机场常见问题', item: 'https://jichangtuijan.top/faq/' },
+  ],
+};
+---
+
+<BaseLayout
+  title="机场常见问题 FAQ：机场是什么、怎么选、多少钱、怎么用｜机场推荐"
+  description="机场常见问题 14 问：机场是什么、月付还是年付、怎么判断靠谱、价格与每GB单价、倍率、客户端导入、优惠码无效、速度自测，每个问题附详细文章。"
+  canonicalPath="/faq/"
+  keywords="机场常见问题,机场是什么,机场怎么选,机场多少钱,机场倍率,机场优惠码,机场导入订阅"
+  jsonLd={[breadcrumbSchema, faqSchema]}
+>
+  <section style="padding: 2.25rem 0; background: var(--tp-bg-alt); border-bottom: 1px solid var(--tp-border);">
+    <div class="tp-container" style="max-width: 960px;">
+      <nav aria-label="面包屑" style="font-size: 0.84rem; color: var(--tp-text-muted); margin-bottom: 0.75rem;">
+        <a href="/">首页</a> &rsaquo; <span>机场常见问题</span>
+      </nav>
+      <h1 style="font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 900; margin: 0 0 0.6rem;">机场常见问题 FAQ</h1>
+      <p style="color: var(--tp-text-secondary); margin: 0; line-height: 1.7;">
+        新手买机场最常问的 {faqs.length} 个问题，每个先给结论，再附完整文章。价格与优惠码为资料参考（核对日期 2026-11-01），以官网结算页为准。
+      </p>
+    </div>
+  </section>
+
+  <div class="tp-container" style="max-width: 960px; padding-top: 2rem; padding-bottom: 3.5rem;">
+    <div style="display: flex; flex-direction: column; gap: 0.9rem;">
+      {faqs.map((f, i) => (
+        <section class="tp-bento-card" style="padding: 1.25rem 1.5rem;" id={`q${i + 1}`}>
+          <h2 style="margin: 0 0 0.5rem; font-size: 1.05rem; font-weight: 800; color: var(--tp-violet);">
+            {i + 1}. {f.q}
+          </h2>
+          <p style="margin: 0 0 0.6rem; font-size: 0.94rem; color: var(--tp-text-secondary); line-height: 1.75;">{f.a}</p>
+          {f.href && (
+            <a href={f.href} style="font-weight: 700; font-size: 0.88rem;">{f.link} &rarr;</a>
+          )}
+        </section>
+      ))}
+    </div>
+
+    <div class="tp-bento-card" style="margin-top: 2rem; padding: 1.25rem 1.5rem;">
+      <strong>想直接看价格和优惠？</strong>
+      <span style="color: var(--tp-text-secondary);">
+        前往 <a href="/compare/">34 家比价表</a>、<a href="/coupons/">优惠资料中心</a> 或 <a href="/ranking/">分类排行榜</a>。
+      </span>
+    </div>
+  </div>
+</BaseLayout>

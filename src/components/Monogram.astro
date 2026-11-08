@@ -1,0 +1,9 @@
+---
+interface Props { name: string; id: string; size?: number }
+const { name, id, size = 44 } = Astro.props;
+let h = 0;
+for (const c of id) h = (h * 31 + c.charCodeAt(0)) % 360;
+const ch = [...name.replace(/[^一-龥A-Za-z0-9]/g, '')][0] ?? '机';
+---
+
+<span class="tp-mono" style={`width:${size}px;height:${size}px;font-size:${size * 0.46}px;background:linear-gradient(135deg,hsl(${h} 72% 52%),hsl(${(h + 48) % 360} 70% 42%))`} aria-hidden="true">{ch}</span>

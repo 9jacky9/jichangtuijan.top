@@ -1,0 +1,633 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { allBrands, flagshipTop3, seventyOffBrands } from '../data/brands';
+import { getCollection } from 'astro:content';
+import Monogram from '../components/Monogram.astro';
+import PerGbRuler from '../components/PerGbRuler.astro';
+
+const allGuides = (await getCollection('guides')).sort(
+  (a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()
+);
+const featuredGuides = allGuides.slice(0, 6);
+
+const homeFaqs = [
+  {
+    "q": "优惠码是否适用于全部套餐？",
+    "a": "不一定。大佬云dly88和闪电鼠sd88仅限月付；首单、年包排除与充值优惠请查看口令总表的逐项说明。没有注明折扣的口令不推算优惠幅度。"
+  },
+  {
+    "q": "排序代表真实用户评价吗？",
+    "a": "不是。默认顺序是资料展示顺序，不是投票结果或性能保证。可以按价格、周期与流量自行筛选，实际服务表现需要在自己的网络验证。"
+  },
+  {
+    "q": "月均价与每GB价格如何理解？",
+    "a": "年付月均价是全年付款除以十二，并非可按月支付。每GB为资料计算值，取决于周期、额度与计费条件；未使用额度和支付费用可能改变实际成本。"
+  },
+  {
+    "q": "购买前应该确认哪些信息？",
+    "a": "确认套餐原价、优惠资格、最终金额、额度重置、设备限制和售后条款。平台访问条件与账号权限以平台官方说明为准。"
+  }
+];
+
+const itemListSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: '2026 机场推荐总榜（34家主流专线节点比价排名）',
+  description: '基于真实套餐折后价、每GB流量单价、IPLC/IEPL专线规格与7折/8折优惠码评出的 2026 年度 34 家机场榜单单。',
+  numberOfItems: allBrands.length,
+  itemListElement: allBrands.map((b, idx) => ({
+    '@type': 'ListItem',
+    position: idx + 1,
+    name: `${b.name} — ${b.tagline}`,
+    url: `https://jichangtuijan.top/reviews/${b.id}/`,
+  })),
+};
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: homeFaqs.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: f.a,
+    },
+  })),
+};
+---
+
+<BaseLayout
+  title="机场推荐 2026：34家机场价格、优惠码与选购指南｜机场推荐"
+  description="机场推荐：整理暮光网络、飞猫云、微风网络、大佬云等34家机场的套餐价格、线路标注、优惠码适用条件和每GB单价，附新手入门、靠谱选购清单与导入教程。价格为资料参考，以结算页为准。"
+  canonicalPath="/"
+  jsonLd={[itemListSchema, faqSchema]}
+>
+  <!-- 1. HERO + TOP 3 FLAGSHIP PODIUM -->
+  <section style="position: relative; overflow: hidden; padding: 2.75rem 0 2.25rem; background: radial-gradient(circle at 15% 10%, var(--tp-violet-light) 0%, transparent 45%), radial-gradient(circle at 85% 20%, var(--tp-rose-light) 0%, transparent 40%); border-bottom: 1px solid var(--tp-border);">
+    
+    <svg class="tp-hero-art" viewBox="0 0 440 300" aria-hidden="true">
+      <defs>
+        <linearGradient id="gv" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#4f46e5"/></linearGradient>
+        <linearGradient id="gr" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fb7185"/><stop offset="1" stop-color="#e11d48"/></linearGradient>
+        <linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fbbf24"/><stop offset="1" stop-color="#d97706"/></linearGradient>
+      </defs>
+      <rect x="30" y="170" width="70" height="100" rx="14" fill="url(#gv)" opacity="0.92"/>
+      <rect x="116" y="120" width="70" height="150" rx="14" fill="url(#gr)" opacity="0.92"/>
+      <rect x="202" y="70" width="70" height="200" rx="14" fill="url(#gg)" opacity="0.95"/>
+      <rect x="288" y="140" width="70" height="130" rx="14" fill="url(#gv)" opacity="0.7"/>
+      <g fill="#fff" font-weight="900" font-family="Segoe UI, sans-serif" text-anchor="middle"><text x="65" y="232" font-size="26">¥</text><text x="151" y="206" font-size="26">GB</text><text x="237" y="180" font-size="26">0.1</text><text x="323" y="214" font-size="26">%</text></g>
+      <g transform="translate(300 30) rotate(12)"><path d="M0 18 L60 0 L42 50 L30 32 Z" fill="#fff" stroke="#4f46e5" stroke-width="3" stroke-linejoin="round"/></g>
+      <circle cx="388" cy="110" r="18" fill="#fef3c7" stroke="#d97706" stroke-width="3"/><text x="388" y="117" text-anchor="middle" font-size="20" font-weight="900" fill="#d97706">¥</text>
+      <path d="M20 280 H400" stroke="#cbd5e1" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    <div class="tp-container">
+      <div style="max-width: 860px; margin-bottom: 2.25rem;">
+        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.9rem;">
+          <span class="tp-badge tp-badge-violet">🏆 2026 机场榜单</span>
+          <span class="tp-badge tp-badge-rose">5 家资料标注 7 折口令（以结算页为准）</span>
+          <span class="tp-badge tp-badge-gold">34 家资料标注 1.0x 倍率</span>
+        </div>
+        <h1 style="font-size: clamp(1.85rem, 3.6vw, 2.85rem); font-weight: 900; line-height: 1.2; margin: 0 0 1rem; letter-spacing: -0.025em;">
+          不看虚标跑分，只算<span style="color: var(--tp-violet);">折后实付价</span>与<span style="color: var(--tp-rose);">每 GB 真实成本</span>
+        </h1>
+        <p style="font-size: 1.05rem; color: var(--tp-text-secondary); margin: 0 0 1.4rem; line-height: 1.7;">
+          欢迎来到 <strong>TopPick 机场推荐</strong>。我们把资料收录的 <strong>34 家 IPLC / IEPL / BGP 专线机场</strong> 全部拆解为可量化的价格账单：从 <strong>¥67.2/年</strong> 的学生保活套餐、<strong>7折后 ¥8.4~¥15.4/月</strong> 的百G主力专线，到 <strong>¥99 一次性买断有效期以条款为准</strong> 的不限时流量包，帮你省下每一分冤枉钱。
+        </p>
+        <div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
+          <a href="#finder" class="tp-btn tp-btn-violet">🧭 30秒智能选机 & 预算计算器</a>
+          <a href="/coupons/" class="tp-btn tp-btn-rose">查看 7 折 / 8 折口令及条件</a>
+          <a href="/compare/" class="tp-btn tp-btn-outline">📊 查看 34 家每GB单价大表</a>
+        </div>
+      </div>
+
+      <!-- TOP 3 FLAGSHIP CARDS -->
+      <div style="margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+        <div style="font-weight: 800; font-size: 1.15rem; display: flex; align-items: center; gap: 0.5rem;">
+          站内次序前 3 位（固定位置，不是评分）
+        </div>
+        <a href="/guides/how-to-choose-reliable-airport-12-point-checklist/" style="font-size: 0.88rem; font-weight: 700;">
+          阅读《靠谱机场 12 项核对清单》&rarr;
+        </a>
+      </div>
+
+      <div class="tp-grid-3">
+        {flagshipTop3.map((b, idx) => {
+          const medalColors = ['#D97706', '#4F46E5', '#E11D48'];
+          const medalLabels = ['🥇 编辑排序 TOP 1', '🥈 编辑排序 TOP 2', '🥉 编辑排序 TOP 3'];
+          return (
+            <article class="tp-bento-card" style={`border-top: 4px solid ${medalColors[idx]}; position: relative; display: flex; flex-direction: column; justify-content: space-between;`}>
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                  <span class="tp-badge tp-badge-gold">{medalLabels[idx]}</span>
+                  <span style="font-weight: 800; font-size: 0.9rem; color: var(--tp-violet);">资料序号 {b.rank}</span>
+                </div>
+
+                <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 0.4rem;">
+                  <div style="display:flex;align-items:center;gap:0.7rem"><Monogram name={b.name} id={b.id} size={46} /><h2 style="font-size: 1.4rem; font-weight: 900; margin: 0;">
+                    <a href={`/reviews/${b.id}/`} style="color: var(--tp-text);">{b.name}</a>
+                  </h2></div>
+                  <span class="tp-badge tp-badge-violet">{b.lineType} · {b.peakBandwidth}</span>
+                </div>
+
+                <p style="font-size: 0.88rem; color: var(--tp-text-secondary); margin: 0 0 1rem;">
+                  {b.tagline}
+                </p>
+
+                <div style="background: var(--tp-bg-alt); border-radius: var(--tp-radius-sm); padding: 0.85rem; margin-bottom: 1rem; font-size: 0.85rem;">
+                  <div style="font-weight: 700; color: var(--tp-violet); margin-bottom: 0.4rem;">
+                    💡 核心套餐与折后精算：
+                  </div>
+                  <ul style="margin: 0; padding-left: 1.1rem; color: var(--tp-text-secondary);">
+                    {b.plans.slice(0, 3).map((p) => (
+                      <li style="margin-bottom: 0.2rem;">
+                        <strong>{p.name}</strong>：¥{p.discountedPrice}/{p.cycle === '年付' ? '年' : '月'}（{p.trafficGB}GB/月 · 折合 ¥{p.monthlyEquivalent}/月）
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: space-between; background: var(--tp-rose-light); color: var(--tp-rose); padding: 0.55rem 0.85rem; border-radius: 8px; font-size: 0.82rem; font-weight: 700; margin-bottom: 1.1rem;">
+                  <span>🎟️ {b.couponLabel}</span>
+                  {b.couponCode && (
+                    <code style="background: #fff; color: #E11D48; padding: 0.1rem 0.45rem; border-radius: 4px; font-weight: 900;">{b.couponCode}</code>
+                  )}
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;">
+                <button
+                  type="button"
+                  class="tp-btn tp-btn-rose"
+                  data-copy-code={b.couponCode || ''}
+                  data-brand-name={b.name}
+                  data-aff-url={b.affUrl}
+                >
+                  {b.couponCode ? `复制 ${b.couponCode} 去官网` : '直达官网享折扣'} &nearr;
+                </button>
+                <a href={`/reviews/${b.id}/`} class="tp-btn tp-btn-outline">
+                  查看套餐精算
+                </a>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <!-- 1.5 PER-GB RULER -->
+  <section class="tp-section" style="border-bottom: 1px solid var(--tp-border);">
+    <div class="tp-container">
+      <div class="tp-section-head">
+        <div>
+          <span class="tp-badge tp-badge-violet">📏 每 GB 价格尺</span>
+          <h2 class="tp-section-title">34 家放在一把尺子上：越靠左，入门档每 GB 标价越低</h2>
+          <p class="tp-section-desc">用“最便宜月付档的标价 ÷ 该档流量”粗算。不含口令折扣，也不代表速度，只回答一个问题：同样一个 GB，账面上差多少。鼠标移到头像上看详情，点击进入评测页。</p>
+        </div>
+        <a href="/compare/" class="tp-btn tp-btn-outline">看 34 家完整比价表 &rarr;</a>
+      </div>
+      <div class="tp-bento-card" style="padding: 1.2rem 1.4rem;"><PerGbRuler /></div>
+    </div>
+  </section>
+
+  <!-- 2. 70% OFF SUPER WOOL ZONE (7折限时重磅羊毛专区) -->
+  <section class="tp-section" style="background: var(--tp-bg-alt); border-bottom: 1px solid var(--tp-border);">
+    <div class="tp-container">
+      <div class="tp-section-head">
+        <div>
+          <span class="tp-badge tp-badge-rose">资料标注 7 折的口令</span>
+          <h2 class="tp-section-title">2026 五大「7 折优惠码」专线机场直通车</h2>
+          <p class="tp-section-desc">按自己的预算、周期和流量比较套餐。优惠条件已按2026年11月1日提供的资料核对；未注明的折扣不作推算，页面参考金额不代替实际订单。</p>
+        </div>
+        <a href="/coupons/" class="tp-btn tp-btn-rose">查看口令总表 &rarr;</a>
+      </div>
+
+      <div class="tp-grid-3">
+        {seventyOffBrands.map((b) => {
+          const heroPlan = b.plans.find((p) => p.couponApplicable && p.cycle === '月付') || b.plans[0];
+          const savedAmount = (heroPlan.originalPrice - heroPlan.discountedPrice).toFixed(2);
+          return (
+            <div class="tp-bento-card" style="border: 1.5px solid var(--tp-rose); position: relative;">
+              <div style="position: absolute; top: -12px; right: 16px; background: var(--tp-rose); color: #fff; font-size: 0.75rem; font-weight: 800; padding: 0.2rem 0.7rem; border-radius: 999px; box-shadow: 0 4px 10px rgba(225,29,72,0.3);">
+                资料标注 7 折口令：{b.couponCode}
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.5rem;">
+                <h3 style="margin: 0; font-size: 1.25rem; font-weight: 900;">
+                  <a href={`/reviews/${b.id}/`} style="color: var(--tp-text);">{b.name}</a>
+                </h3>
+                <span class="tp-badge tp-badge-violet">{b.lineType}</span>
+              </div>
+
+              <p style="font-size: 0.85rem; color: var(--tp-text-secondary); margin: 0 0 0.9rem;">
+                {b.cycleDiscountNote}
+              </p>
+
+              <div style="background: var(--tp-bg); border: 1px dashed var(--tp-border-strong); border-radius: 10px; padding: 0.8rem; margin-bottom: 1rem;">
+                <div style="font-size: 0.8rem; color: var(--tp-text-muted); margin-bottom: 0.25rem;">
+                  主推甜点档：{heroPlan.name}（{heroPlan.trafficGB}GB/月 · 1.0x倍率）
+                </div>
+                <div style="display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap;">
+                  <span style="font-size: 1.45rem; font-weight: 900; color: var(--tp-rose);">
+                    ¥{heroPlan.discountedPrice.toFixed(2)}<small style="font-size: 0.8rem; font-weight: 600;">/月</small>
+                  </span>
+                  <del style="font-size: 0.88rem; color: var(--tp-text-muted);">原价 ¥{heroPlan.originalPrice}</del>
+                  <span class="tp-badge tp-badge-emerald">立省 ¥{savedAmount}</span>
+                </div>
+                <div style="font-size: 0.78rem; color: var(--tp-violet); font-weight: 700; margin-top: 0.3rem;">
+                  折合每 GB 真实流量仅需 ¥{heroPlan.costPerGB.toFixed(3)}/GB
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 0.5rem;">
+                <button
+                  type="button"
+                  class="tp-btn tp-btn-rose"
+                  style="flex: 1;"
+                  data-copy-code={b.couponCode}
+                  data-brand-name={b.name}
+                  data-aff-url={b.affUrl}
+                >
+                  📋 复制 7 折码「{b.couponCode}」去官网
+                </button>
+                <a href={`/reviews/${b.id}/`} class="tp-btn tp-btn-outline" style="padding: 0.65rem 0.85rem;">
+                  评测
+                </a>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. 30-SECOND INTERACTIVE FINDER & BUDGET CALCULATOR -->
+  <section id="finder" class="tp-section" style="border-bottom: 1px solid var(--tp-border);">
+    <div class="tp-container">
+      <div class="tp-section-head">
+        <div>
+          <span class="tp-badge tp-badge-violet">🧭 编辑交互式工具 · 零死角实时过滤</span>
+          <h2 class="tp-section-title">30 秒智能选机向导 & 预算精算器</h2>
+          <p class="tp-section-desc">
+            不知道 34 家机场选哪家？勾选你的<strong>月均预算、核心用途与优惠券偏好</strong>，系统将实时过滤匹配度最高的专线机场，并自动帮你算好折后实付价与每 GB 成本。
+          </p>
+        </div>
+      </div>
+
+      <div class="tp-bento-card" style="background: linear-gradient(180deg, var(--tp-card) 0%, var(--tp-bg-alt) 100%); margin-bottom: 1.75rem;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-bottom: 1.25rem;">
+          <!-- Filter 1: Budget -->
+          <div>
+            <label for="finderBudget" style="display: block; font-weight: 800; font-size: 0.9rem; margin-bottom: 0.45rem;">
+              ① 你的月均预算档位：
+            </label>
+            <select id="finderBudget" style="width: 100%; padding: 0.7rem 0.9rem; border-radius: 10px; border: 1px solid var(--tp-border-strong); background: var(--tp-card); color: var(--tp-text); font-weight: 600; font-size: 0.92rem;">
+              <option value="all">全部预算档位（显示全部 34 家）</option>
+              <option value="under10">&lt;10元/月（百元内特惠年付小包 · 学生/备用）</option>
+              <option value="10to20">10~20元/月（折后平价百G主力甜点档）</option>
+              <option value="20to35">20~35元/月（旗舰 150G~350G 高冗余专线）</option>
+              <option value="payg">一次性买断（不限时有效期以条款为准流量包）</option>
+            </select>
+          </div>
+
+          <!-- Filter 2: Use Case -->
+          <div>
+            <label for="finderUseCase" style="display: block; font-weight: 800; font-size: 0.9rem; margin-bottom: 0.45rem;">
+              ② 你的核心使用场景：
+            </label>
+            <select id="finderUseCase" style="width: 100%; padding: 0.7rem 0.9rem; border-radius: 10px; border: 1px solid var(--tp-border-strong); background: var(--tp-card); color: var(--tp-text); font-weight: 600; font-size: 0.92rem;">
+              <option value="all">全部核心用途</option>
+              <option value="ai">🤖 ChatGPT Plus / Claude / AI 编程开发</option>
+              <option value="streaming">🎬 Netflix / Disney+ / HBO 4K 流媒体追剧</option>
+              <option value="family">🏠 多设备全家桶共享 / OpenWrt 软路由</option>
+              <option value="heavy">🚀 500GB~1.5TB 大流量下载 / 跨境工作室</option>
+            </select>
+          </div>
+
+          <!-- Filter 3: Coupon & Line Type -->
+          <div>
+            <label for="finderCoupon" style="display: block; font-weight: 800; font-size: 0.9rem; margin-bottom: 0.45rem;">
+              ③ 折扣与测速筛选偏好：
+            </label>
+            <select id="finderCoupon" style="width: 100%; padding: 0.7rem 0.9rem; border-radius: 10px; border: 1px solid var(--tp-border-strong); background: var(--tp-card); color: var(--tp-text); font-weight: 600; font-size: 0.92rem;">
+              <option value="all">不限折扣方式（含优惠码与免码周期折扣）</option>
+              <option value="70off">只看资料标注 7 折口令的品牌</option>
+              <option value="hasCoupon">🎟️ 只看有 7折~85折 优惠码的品牌</option>
+              <option value="verified">只看有历史测试记录的 11 家品牌</option>
+            </select>
+          </div>
+
+          <!-- Filter 4: Keyword Search -->
+          <div>
+            <label for="finderKeyword" style="display: block; font-weight: 800; font-size: 0.9rem; margin-bottom: 0.45rem;">
+              ④ 搜索品牌名称 / 优惠码 / 协议：
+            </label>
+            <input
+              type="search"
+              id="finderKeyword"
+              placeholder="例如：飞猫云、VLESS、IEPL、不限时..."
+              style="width: 100%; padding: 0.68rem 0.9rem; border-radius: 10px; border: 1px solid var(--tp-border-strong); background: var(--tp-card); color: var(--tp-text); font-size: 0.92rem;"
+            />
+          </div>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; padding-top: 0.9rem; border-top: 1px solid var(--tp-border);">
+          <div style="font-size: 0.92rem; font-weight: 700;">
+            🎯 实时筛选结果：共为您匹配到 <span id="finderMatchCount" style="color: var(--tp-rose); font-size: 1.15rem; font-weight: 900;">34</span> 家符合条件的专线机场
+          </div>
+          <button type="button" id="finderResetBtn" class="tp-btn tp-btn-outline" style="padding: 0.45rem 0.95rem; font-size: 0.84rem;">
+            重置全部筛选条件
+          </button>
+        </div>
+      </div>
+
+      <!-- 34 BRANDS BENTO GRID MATRIX -->
+      <div id="brandsBentoGrid" class="tp-grid-3">
+        {allBrands.map((b) => {
+          const is70Off = b.discountRate === 0.7;
+          const searchBlob = `${b.name} ${b.id} ${b.lineType} ${b.protocol} ${b.couponCode || ''} ${b.tagline} ${b.regions} ${b.unlockSupport.join(' ')}`.toLowerCase();
+          return (
+            <article
+              class="tp-bento-card tp-brand-card"
+              data-budgets={b.budgetGroup.join(',')}
+              data-usecases={b.useCaseTags.join(',')}
+              data-is70off={is70Off ? 'true' : 'false'}
+              data-hascoupon={b.hasBigCoupon ? 'true' : 'false'}
+              data-verified={b.hasRealSpeedRecord ? 'true' : 'false'}
+              data-search={searchBlob}
+              style="display: flex; flex-direction: column; justify-content: space-between;"
+            >
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.4rem; margin-bottom: 0.65rem; flex-wrap: wrap;">
+                  <div style="display: flex; align-items: center; gap: 0.4rem;">
+                    <span style="background: var(--tp-violet); color: #fff; font-weight: 800; font-size: 0.74rem; padding: 0.15rem 0.5rem; border-radius: 6px;">
+                      #{b.rank}
+                    </span>
+                    <span class={`tp-badge ${is70Off ? 'tp-badge-rose' : 'tp-badge-gold'}`}>
+                      {b.tierBadge}
+                    </span>
+                  </div>
+                  {b.hasRealSpeedRecord && (
+                    <span class="tp-badge tp-badge-emerald" title="站长有历史测试记录">有历史测试记录</span>
+                  )}
+                </div>
+
+                <div style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 0.35rem;">
+                  <h3 style="margin: 0; font-size: 1.25rem; font-weight: 900;">
+                    <a href={`/reviews/${b.id}/`} style="color: var(--tp-text);">{b.name}</a>
+                  </h3>
+                  <span style="font-size: 0.8rem; font-weight: 700; color: var(--tp-violet);">
+                    {b.lineType} · {b.peakBandwidth}
+                  </span>
+                </div>
+
+                <p style="font-size: 0.84rem; color: var(--tp-text-secondary); margin: 0 0 0.85rem; min-height: 2.6em;">
+                  {b.tagline}
+                </p>
+
+                <!-- Key Metrics Bar -->
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.4rem; background: var(--tp-bg-alt); padding: 0.65rem; border-radius: 10px; margin-bottom: 0.85rem; text-align: center;">
+                  <div>
+                    <div style="font-size: 0.72rem; color: var(--tp-text-muted);">年付月均起</div>
+                    <div style="font-weight: 800; font-size: 0.92rem; color: var(--tp-text);">
+                      {b.lowestAnnualMonthlyEq ? `¥${b.lowestAnnualMonthlyEq}/月` : '无小年包'}
+                    </div>
+                  </div>
+                  <div style="border-left: 1px solid var(--tp-border); border-right: 1px solid var(--tp-border);">
+                    <div style="font-size: 0.72rem; color: var(--tp-text-muted);">折后月付起</div>
+                    <div style="font-weight: 900; font-size: 0.96rem; color: var(--tp-rose);">
+                      ¥{b.lowestMonthlyDiscounted}/月
+                    </div>
+                  </div>
+                  <div>
+                    <div style="font-size: 0.72rem; color: var(--tp-text-muted);">最低每GB成本</div>
+                    <div style="font-weight: 800; font-size: 0.92rem; color: var(--tp-emerald);">
+                      ¥{b.bestValueCostPerGB.toFixed(2)}/G
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Plans Preview -->
+                <div style="font-size: 0.81rem; color: var(--tp-text-secondary); margin-bottom: 0.85rem;">
+                  {b.plans.slice(0, 3).map((p) => (
+                    <div style="display: flex; justify-content: space-between; padding: 0.22rem 0; border-bottom: 1px dashed var(--tp-border);">
+                      <span>{p.name} ({p.trafficGB}GB)</span>
+                      <strong style="color: var(--tp-text);">
+                        ¥{p.discountedPrice}/{p.cycle === '年付' ? '年' : p.cycle === '一次性' ? '一次性' : '月'}
+                      </strong>
+                    </div>
+                  ))}
+                </div>
+
+                <!-- Coupon Banner -->
+                <div style="font-size: 0.79rem; background: var(--tp-violet-light); color: var(--tp-violet); padding: 0.45rem 0.7rem; border-radius: 8px; margin-bottom: 0.95rem; font-weight: 700; display: flex; justify-content: space-between; align-items: center;">
+                  <span>🎟️ {b.couponLabel}</span>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 0.5rem;">
+                <button
+                  type="button"
+                  class="tp-btn tp-btn-violet"
+                  style="flex: 1; padding: 0.58rem 0.75rem; font-size: 0.85rem;"
+                  data-copy-code={b.couponCode || ''}
+                  data-brand-name={b.name}
+                  data-aff-url={b.affUrl}
+                >
+                  {b.couponCode ? `复制 ${b.couponCode} 去官网` : '直达官网选购'} &nearr;
+                </button>
+                <a
+                  href={`/reviews/${b.id}/`}
+                  class="tp-btn tp-btn-outline"
+                  style="padding: 0.58rem 0.85rem; font-size: 0.85rem;"
+                >
+                  评测资料
+                </a>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+
+      <div id="finderEmptyState" class="tp-bento-card" style="display: none; text-align: center; padding: 3rem 1.5rem;">
+        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔍</div>
+        <h3 style="margin: 0 0 0.5rem;">没有找到同时满足所有严苛条件的品牌</h3>
+        <p style="color: var(--tp-text-secondary); margin: 0 0 1.25rem;">
+          建议点击下方按钮重置筛选条件，或放宽折扣/预算限制查看全部 34 家专线机场。
+        </p>
+        <button type="button" id="finderEmptyReset" class="tp-btn tp-btn-violet">显示全部 34 家机场</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3.9 BEGINNER MUST-READS -->
+  <section class="tp-section" style="border-bottom: 1px solid var(--tp-border);">
+    <div class="tp-container">
+      <div class="tp-section-head">
+        <div>
+          <span class="tp-badge tp-badge-violet">🧭 新手必读</span>
+          <h2 class="tp-section-title">第一次买机场？先读这 4 篇</h2>
+          <p class="tp-section-desc">
+            从“机场是什么”到“怎么导入订阅”，再到“下单前核对什么”，按顺序读完就能避开大部分新手坑。
+          </p>
+        </div>
+        <a href="/faq/" class="tp-btn tp-btn-outline">查看常见问题 FAQ &rarr;</a>
+      </div>
+      <div class="tp-grid-3" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
+        <a href="/guides/what-is-jichang-beginner-guide-2026/" class="tp-bento-card" style="display:block;text-decoration:none;color:inherit;">
+          <span class="tp-badge tp-badge-gold" style="margin-bottom:.5rem;">第 1 步</span>
+          <div style="font-weight:800;line-height:1.45;margin-bottom:.4rem;">机场是什么？订阅、节点、客户端和流量一次讲清</div>
+          <div style="font-size:.82rem;color:var(--tp-text-secondary);">先弄懂概念，再决定买什么 &rarr;</div>
+        </a>
+        <a href="/guides/how-to-choose-reliable-airport-12-point-checklist/" class="tp-bento-card" style="display:block;text-decoration:none;color:inherit;">
+          <span class="tp-badge tp-badge-gold" style="margin-bottom:.5rem;">第 2 步</span>
+          <div style="font-weight:800;line-height:1.45;margin-bottom:.4rem;">靠谱机场怎么选？下单前 12 项核对清单</div>
+          <div style="font-size:.82rem;color:var(--tp-text-secondary);">含年付止损算法 &rarr;</div>
+        </a>
+        <a href="/guides/jichang-price-cheat-sheet-2026-11/" class="tp-bento-card" style="display:block;text-decoration:none;color:inherit;">
+          <span class="tp-badge tp-badge-gold" style="margin-bottom:.5rem;">第 3 步</span>
+          <div style="font-weight:800;line-height:1.45;margin-bottom:.4rem;">2026年11月机场价格速查表</div>
+          <div style="font-size:.82rem;color:var(--tp-text-secondary);">34 家价格与每 GB 单价对照 &rarr;</div>
+        </a>
+        <a href="/guides/clash-verge-rev-import-subscription-tutorial/" class="tp-bento-card" style="display:block;text-decoration:none;color:inherit;">
+          <span class="tp-badge tp-badge-gold" style="margin-bottom:.5rem;">第 4 步</span>
+          <div style="font-weight:800;line-height:1.45;margin-bottom:.4rem;">Clash Verge Rev 导入订阅教程</div>
+          <div style="font-size:.82rem;color:var(--tp-text-secondary);">买完之后怎么用 &rarr;</div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. FEATURED BUYER GUIDES SECTION -->
+  <section class="tp-section" style="background: var(--tp-bg-alt); border-bottom: 1px solid var(--tp-border);">
+    <div class="tp-container">
+      <div class="tp-section-head">
+        <div>
+          <span class="tp-badge tp-badge-gold">📖 编辑整理的精算专栏</span>
+          <h2 class="tp-section-title">2026 机场省钱攻略与价格段横评报告</h2>
+          <p class="tp-section-desc">
+            我们的编辑把 34 家机场的年付小包、7折优惠码、不限时流量包、4K 追剧与 AI 办公成本拆成了详尽的数学账单。
+          </p>
+        </div>
+        <a href="/guides/" class="tp-btn tp-btn-violet">阅读全部 {allGuides.length} 篇深度攻略 &rarr;</a>
+      </div>
+
+      <div class="tp-grid-3">
+        {featuredGuides.map((guide) => (
+          <article class="tp-bento-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.65rem;">
+                <span class="tp-badge tp-badge-violet">{guide.data.category}</span>
+                <span style="font-size: 0.78rem; color: var(--tp-text-muted);">{guide.data.readingTime} · {guide.data.pubDate}</span>
+              </div>
+              <h3 style="font-size: 1.12rem; font-weight: 800; line-height: 1.45; margin: 0 0 0.65rem;">
+                <a href={`/guides/${guide.slug}/`} style="color: var(--tp-text);">{guide.data.title}</a>
+              </h3>
+              <p style="font-size: 0.87rem; color: var(--tp-text-secondary); margin: 0 0 1rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                {guide.data.description}
+              </p>
+            </div>
+            <div style="padding-top: 0.75rem; border-top: 1px dashed var(--tp-border); display: flex; justify-content: space-between; align-items: center; font-size: 0.84rem;">
+              <span style="color: var(--tp-gold); font-weight: 700;">💡 {guide.data.tags[0]}</span>
+              <a href={`/guides/${guide.slug}/`} style="font-weight: 700;">阅读全文 &rarr;</a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. HOME AUTHORITATIVE FAQ SECTION -->
+  <section class="tp-section">
+    <div class="tp-container" style="max-width: 960px;">
+      <div class="tp-section-head">
+        <div>
+          <span class="tp-badge tp-badge-violet">❓ 新手与老司机必读问答</span>
+          <h2 class="tp-section-title">2026 专线机场选购核心常见问题 (FAQ)</h2>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        {homeFaqs.map((faq) => (
+          <div class="tp-bento-card" style="padding: 1.25rem 1.5rem;">
+            <h3 style="margin: 0 0 0.5rem; font-size: 1.06rem; font-weight: 800; color: var(--tp-violet);">
+              Q：{faq.q}
+            </h3>
+            <p style="margin: 0; font-size: 0.94rem; color: var(--tp-text-secondary); line-height: 1.7;">
+              {faq.a}
+            </p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <script is:inline>
+    (function () {
+      var budgetSel = document.getElementById('finderBudget');
+      var useCaseSel = document.getElementById('finderUseCase');
+      var couponSel = document.getElementById('finderCoupon');
+      var keywordInput = document.getElementById('finderKeyword');
+      var resetBtn = document.getElementById('finderResetBtn');
+      var emptyResetBtn = document.getElementById('finderEmptyReset');
+      var matchCountEl = document.getElementById('finderMatchCount');
+      var emptyStateEl = document.getElementById('finderEmptyState');
+      var cards = Array.prototype.slice.call(document.querySelectorAll('.tp-brand-card'));
+
+      function applyFinderFilter() {
+        var bVal = budgetSel ? budgetSel.value : 'all';
+        var uVal = useCaseSel ? useCaseSel.value : 'all';
+        var cVal = couponSel ? couponSel.value : 'all';
+        var kw = keywordInput ? keywordInput.value.trim().toLowerCase() : '';
+
+        var visibleCount = 0;
+
+        cards.forEach(function (card) {
+          var budgets = (card.getAttribute('data-budgets') || '').split(',');
+          var usecases = (card.getAttribute('data-usecases') || '').split(',');
+          var is70 = card.getAttribute('data-is70off') === 'true';
+          var hasCoupon = card.getAttribute('data-hascoupon') === 'true';
+          var verified = card.getAttribute('data-verified') === 'true';
+          var searchBlob = card.getAttribute('data-search') || '';
+
+          var okBudget = bVal === 'all' || budgets.indexOf(bVal) !== -1;
+          var okUseCase = uVal === 'all' || usecases.indexOf(uVal) !== -1;
+          var okCoupon = true;
+          if (cVal === '70off') okCoupon = is70;
+          else if (cVal === 'hasCoupon') okCoupon = hasCoupon;
+          else if (cVal === 'verified') okCoupon = verified;
+
+          var okKw = !kw || searchBlob.indexOf(kw) !== -1;
+
+          if (okBudget && okUseCase && okCoupon && okKw) {
+            card.style.display = 'flex';
+            visibleCount++;
+          } else {
+            card.style.display = 'none';
+          }
+        });
+
+        if (matchCountEl) matchCountEl.textContent = String(visibleCount);
+        if (emptyStateEl) {
+          emptyStateEl.style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+      }
+
+      function resetAll() {
+        if (budgetSel) budgetSel.value = 'all';
+        if (useCaseSel) useCaseSel.value = 'all';
+        if (couponSel) couponSel.value = 'all';
+        if (keywordInput) keywordInput.value = '';
+        applyFinderFilter();
+      }
+
+      if (budgetSel) budgetSel.addEventListener('change', applyFinderFilter);
+      if (useCaseSel) useCaseSel.addEventListener('change', applyFinderFilter);
+      if (couponSel) couponSel.addEventListener('change', applyFinderFilter);
+      if (keywordInput) keywordInput.addEventListener('input', applyFinderFilter);
+      if (resetBtn) resetBtn.addEventListener('click', resetAll);
+      if (emptyResetBtn) emptyResetBtn.addEventListener('click', resetAll);
+    })();
+  </script>
+</BaseLayout>
