@@ -57,13 +57,13 @@ const faqSchema = {
         2026 全网 34 家专线机场参数与每 GB 单价横向比价表
       </h1>
       <p style="color: var(--tp-text-secondary); max-width: 840px; margin: 0 0 1.25rem; font-size: 0.98rem;">
-        把 34 家品牌的底裤全部扒开对比！点击下方快捷排序按钮或直接<strong>点击表格列标题</strong>，即可按<strong>「年付最低价」、「月付原价」、「折后月付价」、「每GB单价（元/GB）」、「峰值带宽」与「优惠力度」</strong>升序/降序排列。
+        在相同口径下比较 34 家品牌的套餐资料。点击下方快捷排序按钮或直接<strong>点击表格列标题</strong>，即可按<strong>「年付最低价」、「月付原价」、「折后月付价」、「每GB单价（元/GB）」、「峰值带宽」与「优惠力度」</strong>升序/降序排列。
       </p>
 
       <div style="display: flex; flex-wrap: wrap; gap: 0.55rem; align-items: center;">
         <span style="font-size: 0.85rem; font-weight: 800; color: var(--tp-violet);">⚡ 快捷排序：</span>
         <button type="button" class="tp-btn tp-btn-violet sort-quick-btn" data-sort-col="rank" data-sort-dir="asc" style="padding: 0.42rem 0.85rem; font-size: 0.82rem;">
-          默认综合排名
+          默认资料顺序
         </button>
         <button type="button" class="tp-btn tp-btn-outline sort-quick-btn" data-sort-col="discounted" data-sort-dir="asc" style="padding: 0.42rem 0.85rem; font-size: 0.82rem;">
           按折后月付从低到高
@@ -82,11 +82,11 @@ const faqSchema = {
   </section>
 
   <div class="tp-container" style="padding-top: 2rem; padding-bottom: 3rem;">
-    <div class="tp-table-wrap">
+    <label for="compareSearch">搜索品牌、线路或口令</label><div class="tp-search-row"><input id="compareSearch" type="search" placeholder="例如：飞猫、IPLC、dly88" /><button type="button" class="tp-btn tp-btn-outline" id="compareReset">重置</button></div><p id="compareCount" role="status" aria-live="polite">显示 34 家品牌</p><p id="compareEmpty" hidden>没有匹配结果，请更换关键词或重置。</p><div class="tp-table-wrap" tabindex="0" role="region" aria-label="品牌比价表，可横向滚动">
       <table class="tp-table" id="compareMasterTable">
         <thead>
           <tr>
-            <th data-col="rank" style="cursor: pointer;">综合排名 ↕</th>
+            <th data-col="rank" style="cursor: pointer;">资料顺序 ↕</th>
             <th>品牌名称</th>
             <th>专线类型</th>
             <th data-col="bandwidth" style="cursor: pointer;">峰值带宽 ↕</th>
@@ -100,11 +100,11 @@ const faqSchema = {
         </thead>
         <tbody id="compareTableBody">
           {allBrands.map((b) => {
-            const bwNumeric = b.peakBandwidth.includes('2.5Gbps') ? 2500 : b.peakBandwidth.includes('1000Mbps') ? 1000 : 800;
+            const bwNumeric = b.peakBandwidth.includes('2.5Gbps') ? 2500 : b.peakBandwidth.includes('1000Mbps') ? 1000 : null;
             return (
               <tr
                 data-rank={b.rank}
-                data-bandwidth={bwNumeric}
+                data-bandwidth={bwNumeric ?? ""}
                 data-annual={b.lowestAnnualPrice ?? 9999}
                 data-monthly={b.lowestMonthlyOriginal}
                 data-discounted={b.lowestMonthlyDiscounted}
@@ -212,16 +212,23 @@ const faqSchema = {
         if (!tbody) return;
         var rows = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
         rows.sort(function (a, b) {
-          var vA = parseFloat(a.getAttribute('data-' + col) || '0');
-          var vB = parseFloat(b.getAttribute('data-' + col) || '0');
-          return dir === 'asc' ? vA - vB : vB - vA;
+          var vA = parseFloat(a.getAttribute('data-' + col));
+          var vB = parseFloat(b.getAttribute('data-' + col));
+          if (col === 'annual') { if(vA === 9999) vA = NaN; if(vB === 9999) vB = NaN; }
+          if (!Number.isFinite(vA)) return Number.isFinite(vB) ? 1 : 0;
+          if (!Number.isFinite(vB)) return -1;
+          return (dir === 'asc' ? vA - vB : vB - vA) || Number(a.dataset.rank)-Number(b.dataset.rank);
         });
+        quickBtns.forEach(function(b){var selected=b.dataset.sortCol===col&&b.dataset.sortDir===dir;b.classList.toggle('tp-btn-violet',selected);b.classList.toggle('tp-btn-outline',!selected);b.setAttribute('aria-pressed',String(selected));});
+        headers.forEach(function(h){h.setAttribute('aria-sort',h.dataset.col===col?(dir==='asc'?'ascending':'descending'):'none');});
         rows.forEach(function (r) {
           tbody.appendChild(r);
         });
       }
 
       headers.forEach(function (th) {
+        th.tabIndex = 0; th.setAttribute('aria-sort','none');
+        th.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();th.click();}});
         th.addEventListener('click', function () {
           var col = th.getAttribute('data-col');
           if (!col) return;
@@ -235,6 +242,15 @@ const faqSchema = {
         });
       });
 
+      var search = document.getElementById('compareSearch');
+      function filterRows() {
+        var kw=search.value.trim().toLowerCase(); var count=0;
+        tbody.querySelectorAll('tr').forEach(function(row){row.hidden=!!kw&&!row.textContent.toLowerCase().includes(kw);if(!row.hidden)count++;});
+        document.getElementById('compareCount').textContent='显示 '+count+' 家品牌';
+        document.getElementById('compareEmpty').hidden=count!==0;
+      }
+      search.addEventListener('input',filterRows);
+      document.getElementById('compareReset').addEventListener('click',function(){search.value='';filterRows();currentCol='rank';currentDir='asc';sortRows('rank','asc');quickBtns[0].click();});
       quickBtns.forEach(function (btn) {
         btn.addEventListener('click', function () {
           var col = btn.getAttribute('data-sort-col');
@@ -251,6 +267,7 @@ const faqSchema = {
           sortRows(col, dir);
         });
       });
+      sortRows(currentCol,currentDir);
     })();
   </script>
 </BaseLayout>

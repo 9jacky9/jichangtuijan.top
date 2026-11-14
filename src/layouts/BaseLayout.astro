@@ -117,7 +117,7 @@ const schemaArray = Array.isArray(jsonLd)
           </span>
         </a>
 
-        <nav class="tp-nav" aria-label="主导航">
+        <nav class="tp-nav" id="tpMainNav" aria-label="主导航">
           <a href="/" class={`tp-nav-link ${currentPath === '/' ? 'active' : ''}`}>总榜</a>
           <a href="/ranking/" class={`tp-nav-link ${currentPath.startsWith('/ranking') ? 'active' : ''}`}>5大分类排行榜</a>
           <a href="/coupons/" class={`tp-nav-link tp-nav-link-hot ${currentPath.startsWith('/coupons') ? 'active' : ''}`}>口令总表</a>
@@ -126,7 +126,7 @@ const schemaArray = Array.isArray(jsonLd)
           <a href="/about/" class={`tp-nav-link ${currentPath.startsWith('/about') ? 'active' : ''}`}>评测标准</a>
         </nav>
 
-        <div class="tp-header-actions">
+        <div class="tp-header-actions"><button type="button" id="tpMenuToggle" class="tp-theme-btn" aria-controls="tpMainNav" aria-expanded="false">菜单</button>
           <button type="button" id="tpThemeToggle" class="tp-theme-btn" aria-label="切换深浅色主题">
             <span id="tpThemeIcon">🌙</span>
             <span id="tpThemeText">夜间模式</span>
@@ -206,7 +206,7 @@ const schemaArray = Array.isArray(jsonLd)
               <li><a href="/about/">关于我们与评测标准</a></li>
               <li><a href="/privacy/">隐私保护政策</a></li>
               <li><a href="/terms/">服务条款与免责声明</a></li>
-              <li><a href="/sitemap/">全站 HTML サイト地图</a></li>
+              <li><a href="/sitemap/">全站 HTML 网站地图</a></li>
               <li><a href="/rss.xml">RSS 订阅源</a></li>
             </ul>
           </div>
@@ -261,35 +261,42 @@ const schemaArray = Array.isArray(jsonLd)
         var toastBody = document.getElementById('tpToastBody');
         var toastTimer = null;
 
-        document.addEventListener('click', function (e) {
+        document.addEventListener('click', async function (e) {
           var target = e.target.closest('[data-copy-code]');
           if (!target) return;
           var code = target.getAttribute('data-copy-code');
           var brand = target.getAttribute('data-brand-name') || '该品牌';
           var affUrl = target.getAttribute('data-aff-url');
-
-          if (code && navigator.clipboard) {
-            navigator.clipboard.writeText(code).catch(function () {});
+          // Open synchronously from the user gesture, before clipboard work.
+          if (affUrl) window.open(affUrl, '_blank', 'noopener,noreferrer');
+          var copied = false;
+          if (code) {
+            try { await navigator.clipboard.writeText(code); copied = true; } catch (error) {}
           }
-
           if (toast && toastTitle && toastBody) {
             toastTitle.textContent = code
-              ? '✅ 已复制 ' + brand + ' 优惠码：' + code
-              : '✅ 已激活 ' + brand + ' 周期自动折扣通道';
-            toastBody.textContent = affUrl
-              ? '正在新窗口打开 ' + brand + ' 官方网站，请在结算页输入口令，是否生效以结算页为准。'
-              : '已复制优惠口令到剪贴板，请在购买结算页粘贴使用。';
+              ? (copied ? '已复制 ' : '请手动复制 ') + brand + ' 口令：' + code
+              : '已请求打开 ' + brand + ' 购买页';
+            toastBody.textContent = code
+              ? (copied ? '请在结算页粘贴，并核对资格与最终金额。' : '浏览器未允许自动复制，请选中上方口令复制。')
+              : '没有已确认的公开口令，不代表已激活折扣；请查看实际订单。';
             toast.classList.add('show');
             if (toastTimer) clearTimeout(toastTimer);
-            toastTimer = setTimeout(function () {
-              toast.classList.remove('show');
-            }, 4200);
-          }
-
-          if (affUrl) {
-            window.open(affUrl, '_blank', 'noopener,noreferrer');
+            toastTimer = setTimeout(function () { toast.classList.remove('show'); }, copied ? 6000 : 12000);
           }
         });
+        var menu = document.getElementById('tpMenuToggle');
+        var nav = document.getElementById('tpMainNav');
+        function closeMenu() { menu.setAttribute('aria-expanded', 'false'); nav.classList.remove('is-open'); }
+        if (menu && nav) {
+          menu.addEventListener('click', function () {
+            var open = menu.getAttribute('aria-expanded') !== 'true';
+            menu.setAttribute('aria-expanded', String(open)); nav.classList.toggle('is-open', open);
+          });
+          nav.addEventListener('click', function (e) { if (e.target.closest('a')) closeMenu(); });
+          document.addEventListener('keydown', function (e) { if(e.key === 'Escape' && menu.getAttribute('aria-expanded') === 'true') { closeMenu(); menu.focus(); } });
+          window.matchMedia('(min-width: 961px)').addEventListener('change', closeMenu);
+        }
       })();
     </script>
   </body>

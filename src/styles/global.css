@@ -70,7 +70,7 @@ body {
   padding: 0;
   background-color: var(--tp-bg);
   color: var(--tp-text);
-  overflow-x: hidden;
+  overflow-x: visible;
 }
 
 a {
@@ -641,3 +641,12 @@ html[data-theme="dark"] .tp-header {
 .tp-ruler { height: 215px; }
 .tp-ruler .rail { top: 100px; }
 .tp-ruler .tick { top: 118px; }
+
+/* Local release: accessible navigation, responsive controls and content. */
+[hidden]{display:none!important} #tpMenuToggle{display:none} a{text-decoration:none} a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,th:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--tp-violet);outline-offset:4px}
+.tp-search-row{display:flex;gap:.75rem;align-items:center;margin:.6rem 0}.tp-search-row input{min-width:0;flex:1;padding:.8rem;border:1px solid var(--tp-border);border-radius:10px;background:var(--tp-card);color:var(--tp-text)}
+.tp-container,.tp-grid-2>*,.tp-grid-3>*,.tp-bento-card{min-width:0} .tp-grid-2{grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr))} input,select{max-width:100%} .tp-toast{max-width:calc(100vw - 32px);overflow-wrap:anywhere} [id]{scroll-margin-top:110px}
+@media(max-width:960px){.tp-header-inner{display:grid;grid-template-columns:minmax(0,1fr) auto;height:auto;padding:.75rem 0;gap:.7rem;align-items:center}.tp-header-actions{gap:.4rem}#tpMenuToggle{display:inline-flex}.tp-nav{display:none;grid-column:1/-1;width:100%;overflow:visible;flex-direction:column;align-items:stretch}.tp-nav.is-open{display:flex}.tp-nav-link{padding:.7rem}.tp-logo-sub,#tpThemeText{display:none}.tp-theme-btn{min-height:44px;padding:.5rem}.tp-hero-art{display:block;position:relative!important;inset:auto!important;width:min(100%,420px)!important;margin:1.5rem auto}.tp-ruler{min-width:680px}.tp-ruler-wrap{overflow-x:auto;max-width:100%}.tp-grid-2,.tp-grid-3{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+main a, main code { overflow-wrap: anywhere; }

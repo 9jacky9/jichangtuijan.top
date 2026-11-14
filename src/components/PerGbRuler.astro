@@ -24,7 +24,7 @@ const placed = items.map((i) => {
 const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => min + (max - min) * t);
 ---
 
-<div class="tp-ruler" role="img" aria-label="34 家入门档每 GB 标价的分布尺">
+<div class="tp-ruler-wrap" tabindex="0" role="region" aria-label="品牌价格分布，可横向滚动"><div class="tp-ruler" aria-label="34 家入门档每 GB 标价的分布尺">
   <div class="rail"></div>
   {ticks.map((t) => <span class="tick" style={`left:${pos(t)}%`}>¥{t.toFixed(3)}</span>)}
   {placed.map((i) => (
@@ -33,4 +33,5 @@ const ticks = [0, 0.25, 0.5, 0.75, 1].map((t) => min + (max - min) * t);
       {labeled.has(i.b.id) && <span class="n">{i.b.name}</span>}
     </a>
   ))}
+</div>
 </div>

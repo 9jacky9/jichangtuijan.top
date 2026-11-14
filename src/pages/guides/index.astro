@@ -56,6 +56,7 @@ const itemListSchema = {
             <button
               type="button"
               class={`tp-btn ${idx === 0 ? 'tp-btn-violet' : 'tp-btn-outline'} guide-cat-btn`}
+              aria-pressed={idx === 0 ? 'true' : 'false'}
               data-cat={cat}
               style="padding: 0.45rem 0.95rem; font-size: 0.85rem;"
             >
@@ -120,6 +121,7 @@ const itemListSchema = {
     </div>
   </div>
 
+  <div class="tp-container"><p id="guideCount" role="status" aria-live="polite">显示 33 篇文章</p><div id="guideEmpty" hidden><p>没有找到匹配文章，可以清空关键词并查看全部分类。</p><button id="guideReset" type="button" class="tp-btn tp-btn-violet">清空筛选</button></div></div>
   <script is:inline>
     (function () {
       var catBtns = Array.prototype.slice.call(document.querySelectorAll('.guide-cat-btn'));
@@ -129,24 +131,28 @@ const itemListSchema = {
 
       function filterGuides() {
         var kw = searchInput ? searchInput.value.trim().toLowerCase() : '';
+        var count=0;
         cards.forEach(function (card) {
           var c = card.getAttribute('data-cat');
           var s = card.getAttribute('data-search') || '';
           var okCat = activeCat === '全部' || c === activeCat;
           var okKw = !kw || s.indexOf(kw) !== -1;
-          card.style.display = okCat && okKw ? 'flex' : 'none';
+          card.style.display = okCat && okKw ? 'flex' : 'none'; if(okCat&&okKw)count++;
         });
+        document.getElementById('guideCount').textContent='显示 '+count+' 篇文章';
+        document.getElementById('guideEmpty').hidden=count!==0;
       }
 
+      document.getElementById('guideReset').addEventListener('click',function(){searchInput.value='';catBtns[0].click();});
       catBtns.forEach(function (btn) {
         btn.addEventListener('click', function () {
           activeCat = btn.getAttribute('data-cat') || '全部';
           catBtns.forEach(function (b) {
-            b.classList.remove('tp-btn-violet');
+            b.setAttribute('aria-pressed','false'); b.classList.remove('tp-btn-violet');
             b.classList.add('tp-btn-outline');
           });
           btn.classList.remove('tp-btn-outline');
-          btn.classList.add('tp-btn-violet');
+          btn.setAttribute('aria-pressed','true'); btn.classList.add('tp-btn-violet');
           filterGuides();
         });
       });

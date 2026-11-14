@@ -27,8 +27,8 @@ const guides = (await getCollection('guides')).sort(
 
   <div class="tp-container" style="padding-top: 2.25rem; padding-bottom: 3.5rem;">
     <div class="tp-bento-card" style="margin-bottom: 2rem;">
-      <h2 style="margin-top: 0; font-size: 1.35rem; font-weight: 800;">一、 核心导购与比价工具频道（8个主路由）</h2>
-      <ul style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.75rem; list-style: none; padding: 0; margin: 0;">
+      <h2 style="margin-top: 0; font-size: 1.35rem; font-weight: 800;">一、 核心导购与比价工具频道（9个主路由）</h2>
+      <ul style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: 0.75rem; list-style: none; padding: 0; margin: 0;">
         <li><a href="/" style="font-weight: 700;">🏠 首页 · 2026 机场推荐总榜</a></li>
         <li><a href="/ranking/" style="font-weight: 700;">🏆 2026 五大维度机场排行榜中心</a></li>
         <li><a href="/coupons/" style="font-weight: 700;">机场口令总表</a></li>
@@ -43,7 +43,7 @@ const guides = (await getCollection('guides')).sort(
 
     <div class="tp-bento-card" style="margin-bottom: 2rem;">
       <h2 style="margin-top: 0; font-size: 1.35rem; font-weight: 800;">二、 34 家主流专线品牌独立评测资料与比价页（共 {allBrands.length} 页）</h2>
-      <ul style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.65rem; list-style: none; padding: 0; margin: 0;">
+      <ul style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); gap: 0.65rem; list-style: none; padding: 0; margin: 0;">
         {allBrands.map((b) => (
           <li>
             <a href={`/reviews/${b.id}/`} style="font-weight: 700;">

@@ -7,7 +7,8 @@ export default defineConfig({
   integrations: [
     sitemap({
       priority: 0.8,
-      lastmod: new Date('2026-11-08'),
+      // Only changed guide pages receive a new modification date.
+      serialize: (item) => ({ ...item, lastmod: item.url.includes('/guides/') ? new Date('2026-11-14') : undefined }),
     }),
   ],
   build: {
